@@ -1,6 +1,5 @@
+## Noise type ##
 abstract type Noise end
-
-ev(n::Noise, ω) = spectrum(n)(ω)
 
 struct ClassicalNoise{TT<:Real} <: Noise
   T::TT
