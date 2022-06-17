@@ -6,7 +6,7 @@ struct ClassicalNoise{TT<:Real} <: Noise
   T::TT
 end
 
-spectrum(n::ClassicalNoise) = ω -> iszero(ω) ? zero(ω): 2*n.T/ω
+spectrum(n::ClassicalNoise) = ω -> iszero(ω) ? zero(ω) : 2*n.T/ω
 
 struct QuantumNoise{TT<:Real} <: Noise
   T::TT

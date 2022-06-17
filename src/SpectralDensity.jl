@@ -41,6 +41,7 @@ function damping_kernel_time(J::LorentzianSD)
     else
       ω1 = sqrt(J.ω0^2 - (J.Γ/2)^2)
       return J.α*exp(-J.Γ*τ/2)*sin(ω1*τ)/ω1
+    end
   end
   return K
 end
