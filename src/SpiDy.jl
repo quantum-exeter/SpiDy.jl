@@ -9,4 +9,6 @@ include("SpectralDensity.jl");
 include("Noise.jl");
 include("PSD.jl");
 
+export SpectralDensity, LorentzianSD, Noise, PSD
+
 end
