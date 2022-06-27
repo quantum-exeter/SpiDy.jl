@@ -7,7 +7,7 @@ using Random
 
 include("SpectralDensity.jl");
 include("Noise.jl");
-include("PSD.jl");
+include("StochasticField.jl");
 
 export SpectralDensity, LorentzianSD, Noise, PSD
 
