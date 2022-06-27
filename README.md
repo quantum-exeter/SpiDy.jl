@@ -7,4 +7,4 @@ Spin Dynamics Julia script
 * **src**: contains the code
 
 ## Online documentation
-Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/" target="_blank">this link</a>
+Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/">this link</a>
