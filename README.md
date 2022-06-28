@@ -10,4 +10,4 @@ Spin-Dynamics Julia package. The code is a generalization of the results obtaine
 * **src**: contains the code
 
 ## Online documentation
-Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/">this link</a>
+Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/">this link</a>.
