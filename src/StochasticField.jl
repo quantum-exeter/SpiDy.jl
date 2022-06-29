@@ -10,6 +10,15 @@ function PSD(J::SpectralDensity, noise::Noise)
   return psd
 end
 
+"""
+b_field(N, Δt, J::SpectralDensity, noise::Noise, distro=nothing)
+
+Returns the stochastic field b(t). It is evaluated using the Lorentzian spectral
+density defined by the parameters J, the classical/quantum/Barker noise. The sampling
+of the stochastic noise is done in frequency space. The default stochastic noise
+is white noise having Gaussian distribution but different distributions can be specified.
+N defines the number of steps and Δt defines the time step.
+"""
 function b_field(N, Δt, J::SpectralDensity, noise::Noise, distro=nothing)
   if isnothing(distro)
     distro = Normal(0., 1/sqrt(Δt))
