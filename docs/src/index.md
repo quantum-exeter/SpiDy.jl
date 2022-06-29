@@ -1,6 +1,6 @@
 # Power spectral density
 ```@docs
-PSD(J::SpectralDensity, noise::Noise)
+psd(J::SpectralDensity, noise::Noise)
 ```
 # Stochastic field
 ```@docs

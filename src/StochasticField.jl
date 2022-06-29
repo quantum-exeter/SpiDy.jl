@@ -10,6 +10,8 @@ function PSD(J::SpectralDensity, noise::Noise)
   return psd
 end
 
+PSD(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)
+
 """
 b_field(N, Δt, J::SpectralDensity, noise::Noise, distro=nothing)
 
@@ -23,9 +25,10 @@ function b_field(N, Δt, J::SpectralDensity, noise::Noise, distro=nothing)
   if isnothing(distro)
     distro = Normal(0., 1/sqrt(Δt))
   end
-  distrosample = rand(distro, N)
-  distrosamplefft = rfft(distrosample)
+  # distrosample = rand(distro, N)
+  # distrosamplefft = rfft(distrosample)
   psdfft = PSD(J, noise).(2π*rfftfreq(N, 1/Δt)) # NB: rfftfreq(N, 1/Δt) takes the frequency step in input!
+  distrosamplefft = (randn(length(psdfft)) + 1im*randn(length(psdfft)))/sqrt(2)
   bfft = psdfft.*distrosamplefft
   return irfft(bfft, N)
 end
