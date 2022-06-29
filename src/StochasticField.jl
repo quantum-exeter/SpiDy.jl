@@ -25,7 +25,7 @@ function b_field(N, Δt, J::SpectralDensity, noise::Noise, distro=nothing)
   end
   distrosample = rand(distro, N)
   distrosamplefft = rfft(distrosample)
-  freqsample = PSD(J, noise).(2π*rfftfreq(N, 1/Δt)) # the dot evaluates the function at all the array elements
-  bfft = freqsample.*distrosamplefft
+  psdfft = PSD(J, noise).(2π*rfftfreq(N, 1/Δt)) # NB: rfftfreq(N, 1/Δt) takes the frequency step in input!
+  bfft = psdfft.*distrosamplefft
   return irfft(bfft, N)
 end
