@@ -1,16 +1,16 @@
 """
-PSD(J::SpectralDensity, noise::Noise)
+psd(J::SpectralDensity, noise::Noise)
 
 Returns the power spectrum depending on spectral density and noise.
 """
-function PSD(J::SpectralDensity, noise::Noise)
+function psd(J::SpectralDensity, noise::Noise)
   K = damping_kernel_frequency(J)
   n = spectrum(noise)
   psd(ω) = imag(K(ω))*n(ω)
   return psd
 end
 
-PSD(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)
+psd(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)
 
 """
 b_field(N, Δt, J::SpectralDensity, noise::Noise, distro=nothing)
