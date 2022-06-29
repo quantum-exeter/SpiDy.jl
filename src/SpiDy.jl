@@ -10,6 +10,4 @@ include("SpectralDensity.jl");
 include("Noise.jl");
 include("StochasticField.jl");
 
-export SpectralDensity, LorentzianSD, Noise, PSD
-
 end
