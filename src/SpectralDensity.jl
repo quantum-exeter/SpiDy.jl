@@ -23,9 +23,4 @@ reorgenergy(J::LorentzianSD) = (J.α/J.ω0^2)/2
 
 ## Specific damping kernel for a Lorentzian spectral density ##
 ## Depends on ω and J ##
-function damping_kernel_frequency(J::LorentzianSD)
-  function K(ω)
-    return J.α/(J.ω0^2 - ω^2 - 1im*ω*J.Γ)
-  end
-  return K
-end
+damping_kernel_frequency(J::LorentzianSD) = ω -> J.α/(J.ω0^2 - ω^2 - 1im*ω*J.Γ)
