@@ -24,3 +24,23 @@ reorgenergy(J::LorentzianSD) = (J.α/J.ω0^2)/2
 ## Specific damping kernel for a Lorentzian spectral density ##
 ## Depends on ω and J ##
 damping_kernel_frequency(J::LorentzianSD) = ω -> J.α/(J.ω0^2 - ω^2 - 1im*ω*J.Γ)
+
+"""
+psd(J::GenericSD, noise::Noise)
+
+Returns the power spectrum depending on spectral density and noise.
+"""
+function psd(J::GenericSD, noise::Noise)
+  K = damping_kernel_frequency(J)
+  n = spectrum(noise)
+  psd(ω) = imag(K(ω))*n(ω)
+  return psd
+end
+
+"""
+psd(J::LorentzianSD, noise::ClassicalNoise)
+
+Returns the analytical expression for power spectrum depending on Lorentzian spectral
+density and Classical noise.
+"""
+psd(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)
