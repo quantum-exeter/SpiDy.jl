@@ -1,5 +1,5 @@
 ## Spectral density type ##
-abstract type genericSD end
+abstract type GenericSD end
 
 ## Spectral density and spectral-density-divided-by-ω for generic shapes ##
 sd(J::GenericSD) = ω -> sdoverω(J)(ω)*ω
