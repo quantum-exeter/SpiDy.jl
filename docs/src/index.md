@@ -4,8 +4,8 @@
 
 ## Functions
 ```@docs
-psd(J::SpectralDensity, noise::Noise)
-b_field(N, Δt, J::SpectralDensity, noise::Noise, distro=nothing)
+psd(J::GenericSD, noise::Noise)
+b_field(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
 ```
 
 ## Index
