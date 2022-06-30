@@ -1,28 +1,55 @@
 ## Spectral density type ##
 abstract type GenericSD end
 
-## Spectral density and spectral-density-divided-by-ω for generic shapes ##
-sd(J::GenericSD) = ω -> sdoverω(J)(ω)*ω
-sdoverω(J::GenericSD) = ω -> sd(J)(ω)/ω
-
-## Reorganization energy numerically integrated ∫_0^inf{spectral density}dω ##
-reorgenergy(J::GenericSD) = quadgk(sdoverω(J), 0.0, Inf)[1]
-
-## Lorentzian Spectral Density ##
+## Lorentzian Spectral Density structure##
 struct LorentzianSD{T<:Real} <: GenericSD
   α::T
   ω0::T
   Γ::T
 end
 
-## Spectral density divided by ω which naturally defines sd(J::GenericSD) ##
+"""
+sd(J::GenericSD)
+
+Spectral density for generic shapes.
+"""
+sd(J::GenericSD) = ω -> sdoverω(J)(ω)*ω
+
+"""
+sdoverω(J::GenericSD)
+
+Spectral-density-divided-by-ω for generic shapes.
+"""
+sdoverω(J::GenericSD) = ω -> sd(J)(ω)/ω
+
+"""
+reorgenergy(J::GenericSD)
+
+Reorganization energy numerically integrated as ``\\int_0^\\infty \\text{psd}(\\omega)d\\omega``.
+"""
+reorgenergy(J::GenericSD) = quadgk(sdoverω(J), 0.0, Inf)[1]
+
+"""
+sdoverω(J::LorentzianSD)
+
+Spectral density divided by ω which naturally defines sd(J::LorentzianSD).
+"""
 sdoverω(J::LorentzianSD) = ω -> (J.α*J.Γ/π)/((ω^2 - J.ω0^2)^2 + (J.Γ*ω)^2)
 
-## Analytical reorganization energy for Lorentzian spectral density ##
+"""
+reorgenergy(J::LorentzianSD)
+
+Analytical reorganization energy for Lorentzian spectral density.
+"""
 reorgenergy(J::LorentzianSD) = (J.α/J.ω0^2)/2
 
-## Specific damping kernel for a Lorentzian spectral density ##
-## Depends on ω and J ##
+
+"""
+damping_kernel_frequency(J::LorentzianSD)
+
+Specific damping kernel for a Lorentzian spectral density. It returns
+a function depending on ω and J.
+"""
 damping_kernel_frequency(J::LorentzianSD) = ω -> J.α/(J.ω0^2 - ω^2 - 1im*ω*J.Γ)
 
 """
