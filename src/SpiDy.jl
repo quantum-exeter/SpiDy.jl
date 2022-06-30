@@ -11,6 +11,7 @@ include("Noise.jl");
 include("StochasticField.jl");
 
 export SpectralDensity, Noise, StochasticField
-export LorentzianSD, psd, b_field
+export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, GenericSD, LorentzianSD
+export psd, b_field, spectrum, sd, sdoverω, reorgenergy, damping_kernel_frequency
 
 end
