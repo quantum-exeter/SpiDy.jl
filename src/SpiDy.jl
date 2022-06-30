@@ -6,8 +6,8 @@ using FFTW
 using Random
 using Distributions
 
-include("SpectralDensity.jl");
 include("Noise.jl");
+include("SpectralDensity.jl");
 include("StochasticField.jl");
 
 export SpectralDensity, Noise, StochasticField
