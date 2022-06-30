@@ -1,8 +1,13 @@
-# Power spectral density
+# SpiDy.jl documentation
+```@contents
+```
+
+## Functions
 ```@docs
 psd(J::SpectralDensity, noise::Noise)
-```
-# Stochastic field
-```@docs
 b_field(N, Δt, J::SpectralDensity, noise::Noise, distro=nothing)
+```
+
+## Index
+```@index
 ```
