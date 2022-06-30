@@ -1,21 +1,21 @@
 ## Spectral density type ##
-abstract type SpectralDensity end
+abstract type genericSD end
 
 ## Spectral density and spectral-density-divided-by-ω for generic shapes ##
-sd(J::SpectralDensity) = ω -> sdoverω(J)(ω)*ω
-sdoverω(J::SpectralDensity) = ω -> sd(J)(ω)/ω
+sd(J::GenericSD) = ω -> sdoverω(J)(ω)*ω
+sdoverω(J::GenericSD) = ω -> sd(J)(ω)/ω
 
 ## Reorganization energy numerically integrated ∫_0^inf{spectral density}dω ##
-reorgenergy(J::SpectralDensity) = quadgk(sdoverω(J), 0.0, Inf)[1]
+reorgenergy(J::GenericSD) = quadgk(sdoverω(J), 0.0, Inf)[1]
 
 ## Lorentzian Spectral Density ##
-struct LorentzianSD{T<:Real} <: SpectralDensity
+struct LorentzianSD{T<:Real} <: GenericSD
   α::T
   ω0::T
   Γ::T
 end
 
-## Spectral density divided by ω which naturally defines sd(J::SpectralDensity) ##
+## Spectral density divided by ω which naturally defines sd(J::GenericSD) ##
 sdoverω(J::LorentzianSD) = ω -> (J.α*J.Γ/π)/((ω^2 - J.ω0^2)^2 + (J.Γ*ω)^2)
 
 ## Analytical reorganization energy for Lorentzian spectral density ##

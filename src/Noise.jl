@@ -15,9 +15,9 @@ end
 
 spectrum(n::QuantumNoise) = ω -> iszero(n.T) ? sign(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2))
 
-## Barker noise ##
-struct BarkerNoise{TT<:Real} <: Noise
+## NoZeroQuantumNoise noise ##
+struct NoZeroQuantumNoise{TT<:Real} <: Noise
   T::TT
 end
 
-spectrum(n::BarkerNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/T/2) - sign(ω))
+spectrum(n::NoZeroQuantumNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/T/2) - sign(ω))
