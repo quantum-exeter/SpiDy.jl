@@ -2,8 +2,8 @@
 b_field(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
 
 Returns the stochastic field b(t). It is evaluated using the Lorentzian spectral
-density defined by the parameters J, the classical/quantum/Barker noise. The sampling
-of the stochastic noise is done in frequency space. The default stochastic noise
+density defined by the parameters J, the classical/quantum/quantum-no-zero-energy noise.
+The sampling of the stochastic noise is done in frequency space. The default stochastic noise
 is white noise having Gaussian distribution but different distributions can be specified.
 N defines the number of steps and Δt defines the time step.
 """
