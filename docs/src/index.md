@@ -3,6 +3,11 @@
 ```
 
 ## Noise
+```@docs
+spectrum(n::ClassicalNoise)
+spectrum(n::QuantumNoise)
+spectrum(n::NoZeroQuantumNoise)
+```
 
 ## Spectral density
 ```@docs
