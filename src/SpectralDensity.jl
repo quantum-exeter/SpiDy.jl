@@ -25,7 +25,7 @@ sdoverω(J::GenericSD) = ω -> sd(J)(ω)/ω
 """
 reorgenergy(J::GenericSD)
 
-Reorganization energy numerically integrated as ``\\int_0^\\infty \\text{psd}(\\omega)d\\omega``.
+Reorganization energy numerically integrated as ``\\int_0^\\infty \\text{sdoverω}(\\omega)d\\omega``.
 """
 reorgenergy(J::GenericSD) = quadgk(sdoverω(J), 0.0, Inf)[1]
 
