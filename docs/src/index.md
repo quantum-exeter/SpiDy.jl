@@ -16,14 +16,14 @@ sdoverω(J::GenericSD)
 sdoverω(J::LorentzianSD)
 reorgenergy(J::GenericSD)
 reorgenergy(J::LorentzianSD)
-damping_kernel_frequency(J::LorentzianSD)
+kernel(J::LorentzianSD)
 psd(J::GenericSD, noise::Noise)
 psd(J::LorentzianSD, noise::ClassicalNoise)
 ```
 
 ## Stochastic field
 ```@docs
-b_field(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
+bfield(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
 ```
 
 ## Index
