@@ -1,5 +1,5 @@
 function diffEqSolver(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
-
+    
 end
 
 

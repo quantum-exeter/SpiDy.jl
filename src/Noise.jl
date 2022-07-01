@@ -3,17 +3,17 @@ abstract type Noise end
 
 ## Classical noise structure ##
 struct ClassicalNoise{TT<:Real} <: Noise
-  T::TT
+    T::TT
 end
 
 ## Quantum noise structure ##
 struct QuantumNoise{TT<:Real} <: Noise
-  T::TT
+    T::TT
 end
 
 ## NoZeroQuantumNoise noise structure ##
 struct NoZeroQuantumNoise{TT<:Real} <: Noise
-  T::TT
+    T::TT
 end
 
 """

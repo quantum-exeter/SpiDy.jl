@@ -3,9 +3,9 @@ abstract type GenericSD end
 
 ## Lorentzian Spectral Density structure##
 struct LorentzianSD{T<:Real} <: GenericSD
-  α::T
-  ω0::T
-  Γ::T
+    α::T
+    ω0::T
+    Γ::T
 end
 
 """
@@ -59,10 +59,10 @@ Power spectral density depending on parameters J and noise. It
 returns a function of ω.
 """
 function psd(J::GenericSD, noise::Noise)
-  K = kernel(J)
-  n = spectrum(noise)
-  psd(ω) = imag(K(ω))*n(ω)
-  return psd
+    K = kernel(J)
+    n = spectrum(noise)
+    psd(ω) = imag(K(ω))*n(ω)
+    return psd
 end
 
 """
