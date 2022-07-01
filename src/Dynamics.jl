@@ -1,10 +1,10 @@
-function diffEqSolver(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
-    
+function diffeqsolver(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
+
 end
 
 
 
-# def M_sim(barTv, S0, prm, Nsam, nsx, nsy, nsz, whatNoise, matrix):
+# def M_sim(nsx, nsy, nsz, matrix):
 #     w0, Gamma, A = prm
 #     matrix_c_w_2 = matrix @ np.transpose(matrix)
 #     bx_int = intpl.interp1d(tva_extended,

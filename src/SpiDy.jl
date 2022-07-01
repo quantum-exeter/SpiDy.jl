@@ -9,9 +9,11 @@ using Distributions
 include("Noise.jl");
 include("SpectralDensity.jl");
 include("StochasticField.jl");
+include("SpinState.jl");
+include("CouplingFunction.jl");
+include("Dynamics.jl");
 
-export SpectralDensity, Noise, StochasticField
 export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, GenericSD, LorentzianSD
-export psd, bfield, spectrum, sd, sdoverω, reorgenergy, kernel
+export psd, bfield, spectrum, sd, sdoverω, reorgenergy, kernel, diffeqsolver
 
 end

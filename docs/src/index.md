@@ -26,6 +26,19 @@ psd(J::LorentzianSD, noise::ClassicalNoise)
 bfield(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
 ```
 
+## Spin state
+```@docs
+```
+
+## Coupling function
+```@docs
+```
+
+## Dynamics
+```@docs
+diffeqsolver(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
+```
+
 ## Index
 ```@index
 ```
