@@ -13,7 +13,11 @@ include("SpinState.jl");
 include("CouplingFunction.jl");
 include("Dynamics.jl");
 
+# export external files to build documentation
+export Noise, SpectralDensity, StochasticField, SpinState, CouplingFunction, Dynamics
+# export structures to build documentation
 export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, GenericSD, LorentzianSD
+# export modules and functions to build documentation
 export psd, bfield, spectrum, sd, sdoverω, reorgenergy, kernel, diffeqsolver
 
 end
