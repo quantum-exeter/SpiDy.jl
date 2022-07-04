@@ -1,4 +1,4 @@
-function diffeqsolver(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
+function diffeqsolver(N, Δt, J::GenericSD, noise::Noise, Cω::Coupling, distro=Normal(0., 1/sqrt(Δt)))
 
 end
 
