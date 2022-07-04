@@ -7,6 +7,7 @@ Spin-Dynamics Julia package. The code is a generalization of the results obtaine
 ## Repo structure
 * **.github/workflows**: contains the yml file to build the documentation and commit on the gh-pages branch
 * **docs**: contains the logos, make.jl and index.md for the generation of documentation
+* **notebooks**: contains jupyter notebooks to test the code
 * **src**: contains the code
 
 ## Online documentation
