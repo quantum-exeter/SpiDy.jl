@@ -18,7 +18,6 @@ Base.getindex(coupling::AnisoCoupling{TT}, I::Vararg{Int,N}) where {TT<:Abstract
 ## Isotropic coupling structure ##
 struct IsoCoupling{TT<:Real} <: Coupling
     C::TT
-    IsoCoupling(C) = C*I
 end
 
 Base.size(coupling::IsoCoupling{TT}) where {TT<:Real} = (3,3)
