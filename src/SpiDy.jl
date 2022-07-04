@@ -5,6 +5,7 @@ using DifferentialEquations
 using FFTW
 using Random
 using Distributions
+using Interpolations
 
 include("Noise.jl");
 include("SpectralDensity.jl");
@@ -15,7 +16,7 @@ include("Dynamics.jl");
 # export external files to build documentation
 export Noise, SpectralDensity, StochasticField, CouplingTensor, Dynamics
 # export structures to build documentation
-export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, GenericSD, LorentzianSD
+export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, GenericSD, LorentzianSD, AnisoCoupling, IsoCoupling
 # export modules and functions to build documentation
 export psd, bfield, spectrum, sd, sdoverω, reorgenergy, kernel, diffeqsolver
 
