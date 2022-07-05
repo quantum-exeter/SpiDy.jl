@@ -53,7 +53,9 @@ parameters in `J`. It returns a function depending on `ω`.
 kernel(J::LorentzianSD) = ω -> J.α/(J.ω0^2 - ω^2 - 1im*ω*J.Γ)
 
 """
-`psd(J::GenericSD, noise::Noise)`{:.Julia}
+```Julia
+psd(J::GenericSD, noise::Noise)
+```
 
 Power spectral density depending on parameters `J` and noise. It
 returns a function of `ω`.
@@ -66,7 +68,9 @@ function psd(J::GenericSD, noise::Noise)
 end
 
 """
-`psd(J::LorentzianSD, noise::ClassicalNoise)`{:.Julia}
+```Julia
+psd(J::LorentzianSD, noise::ClassicalNoise)
+```
 
 Returns the analytical expression for power spectrum depending on Lorentzian spectral
 density and Classical noise.
