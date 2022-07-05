@@ -23,21 +23,19 @@ psd(J::LorentzianSD, noise::ClassicalNoise)
 
 ## Stochastic field
 ```@docs
-bfield(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
+bfield(N, Δt, J::GenericSD, noise::Noise; distro=Normal(0., 1/sqrt(Δt)), interpolation=true)
 ```
 
-<!-- ## Spin state
+## Coupling tensor
 ```@docs
-```
-
-## Coupling function
-```@docs
+AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}}
+IsoCoupling{TT<:Real}
 ```
 
 ## Dynamics
 ```@docs
-diffeqsolver(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
-``` -->
+diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1])
+```
 
 ## Index
 ```@index
