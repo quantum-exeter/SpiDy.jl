@@ -32,7 +32,7 @@ reorgenergy(J::GenericSD) = quadgk(sdoverω(J), 0.0, Inf)[1]
 """
 sdoverω(J::LorentzianSD)
 
-Spectral density divided by ω which naturally defines sd(J::LorentzianSD).
+Spectral density divided by `ω` which naturally defines `sd(J::LorentzianSD)`.
 """
 sdoverω(J::LorentzianSD) = ω -> (J.α*J.Γ/π)/((ω^2 - J.ω0^2)^2 + (J.Γ*ω)^2)
 
@@ -48,15 +48,15 @@ reorgenergy(J::LorentzianSD) = (J.α/J.ω0^2)/2
 kernel(J::LorentzianSD)
 
 Specific damping kernel for a Lorentzian spectral density defined by the
-parameters in J. It returns a function depending on ω.
+parameters in `J`. It returns a function depending on `ω`.
 """
 kernel(J::LorentzianSD) = ω -> J.α/(J.ω0^2 - ω^2 - 1im*ω*J.Γ)
 
 """
 psd(J::GenericSD, noise::Noise)
 
-Power spectral density depending on parameters J and noise. It
-returns a function of ω.
+Power spectral density depending on parameters `J` and noise. It
+returns a function of `ω`.
 """
 function psd(J::GenericSD, noise::Noise)
     K = kernel(J)
@@ -66,7 +66,7 @@ function psd(J::GenericSD, noise::Noise)
 end
 
 """
-psd(J::LorentzianSD, noise::ClassicalNoise)
+`psd(J::LorentzianSD, noise::ClassicalNoise)`
 
 Returns the analytical expression for power spectrum depending on Lorentzian spectral
 density and Classical noise.

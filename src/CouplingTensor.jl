@@ -3,7 +3,7 @@ abstract type Coupling end
 """
 AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}}
 
-Returns an object of type *Coupling* built by passing it a 3x3 matrix{Real} which defines
+Returns an object of type `Coupling` built by passing it a 3x3 `Matrix{Real}` which defines
 the n-dimentional coupling between the spin and the stochastic fields. The matrix  can therefore
 define a 1D, 2D as well as a 3D coupling. 
 """
@@ -18,7 +18,7 @@ Base.getindex(coupling::AnisoCoupling{TT}, I::Vararg{Int,N}) where {TT<:Abstract
 """
 IsoCoupling{TT<:Real}
 
-Returns an object of type *Coupling* built by passing it a single Real value which defines
+Returns an object of type `Coupling` built by passing it a single Real value which defines
 the n-dimentional isotropic coupling between the spin and the stochastic fields.
 """
 struct IsoCoupling{TT<:Real} <: Coupling

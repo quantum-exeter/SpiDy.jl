@@ -1,13 +1,13 @@
 """
 diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1])
 
-Returns **[sol.t, s, sinterp]**, that is, the vector **sol.t** of time steps at which the solutions are evaluated,
-the 3-vector of the solutions **s[1]**, **s[2]**, **s[3]** evaluated at times **sol.t**,
-the 3 functions sinterp(t)[i] interpolations of the solutions **s[i]** found in the give time span.
+Returns `[sol.t, s, sinterp]`, that is, the vector `sol.t` of time steps at which the solutions are evaluated,
+the 3-vector of the solutions `s[1]`, `s[2]`, `s[3]` evaluated at times `sol.t`,
+the 3 functions sinterp(t)[i] interpolations of the solutions `s[i]` found in the give time span.
 
 The differential equation solver is built to account for Lorentzian spectral density. The two keyword arguments of 
-the function are the spin length **S0** set at default value 1/2 and the vector of the external magnetic field
-**Bext** set as unit-vector along the z-axis direction as default, **Bext = [0, 0, 1]**.
+the function are the spin length `S0` set at default value 1/2 and the vector of the external magnetic field
+`Bext` set as unit-vector along the z-axis direction as default, `Bext = [0, 0, 1]`.
 """
 function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1])
 
