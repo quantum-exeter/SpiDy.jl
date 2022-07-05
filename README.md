@@ -7,13 +7,13 @@ Spin-Dynamics Julia package. The code is a generalization of the results obtaine
 ## Install the package
 Following the Julia *General Registry*, the package can be installed as follows,
 ```Julia
->>> using Pkg;
->>> Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
+using Pkg;
+Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
 ```
 or using the Pkg REPL mode as follows,
 ```Julia
->>> ]
->>> add https://github.com/quantum-exeter/SpiDy.jl
+]
+add https://github.com/quantum-exeter/SpiDy.jl
 ```
 
 ## Repo structure
