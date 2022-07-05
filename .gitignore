@@ -28,8 +28,8 @@ Manifest.toml
 */.ipynb_checkpoints/*
 
 # Ignore personal test files
-test_ss.ipynb
-plot.ipynb
+notebooks/test_ss.ipynb
+notebooks/plot.ipynb
 
 # Ignore data files
 *.npz
