@@ -7,8 +7,8 @@ using NPZ
 using Random
 using LinearAlgebra
 
-Δt = 0.15
-N = 72_000
+Δt = 0.05
+N = 100_000
 tspan = (0., N*Δt)
 
 # Lorentzian(α, ω0, Γ)
@@ -18,10 +18,10 @@ matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
 
-T = 10 .^ LinRange(-2, 2, 12)
+T = 10 .^ LinRange(-3, 3, 12)
 Sss = zeros(length(T), 3)
 
-navg = 5
+navg = 8
 Threads.@threads for n in ProgressBar(1:length(T))
     noise = ClassicalNoise(T[n]);
     s = zeros(navg, 3)
@@ -30,8 +30,8 @@ Threads.@threads for n in ProgressBar(1:length(T))
         bfields = [bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise)];
-        sol = diffeqsolver(s0, tspan, J, bfields, matrix);
-        s[i, :] = mean([sol[3](t)[n] for t in (N*3÷4)*Δt:Δt:N*Δt, n in 1:3], dims=1)
+        sol = diffeqsolver(s0, tspan, J, bfields, matrix, Bext=[0, 0, 10]);
+        s[i, :] = mean([sol[3](t)[n] for t in (N*4÷5)*Δt:Δt:N*Δt, n in 1:3], dims=1)
     end
     Sss[n, :] = mean(s, dims=1)
 end
