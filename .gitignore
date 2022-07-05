@@ -29,3 +29,7 @@ Manifest.toml
 
 # Ignore personal test files
 TestSS.ipynb
+plot.ipynb
+
+# Ignore data files
+*.npz
