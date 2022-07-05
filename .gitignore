@@ -28,7 +28,7 @@ Manifest.toml
 */.ipynb_checkpoints/*
 
 # Ignore personal test files
-TestSS.ipynb
+test_ss.ipynb
 plot.ipynb
 
 # Ignore data files
