@@ -4,6 +4,10 @@
 
 ## Noise
 ```@docs
+Noise
+ClassicalNoise
+QuantumNoise
+NoZeroQuantumNoise
 spectrum(n::ClassicalNoise)
 spectrum(n::QuantumNoise)
 spectrum(n::NoZeroQuantumNoise)
@@ -11,6 +15,8 @@ spectrum(n::NoZeroQuantumNoise)
 
 ## Spectral density
 ```@docs
+GenericSD
+LorentzianSD
 sd(J::GenericSD)
 sdoverω(J::GenericSD)
 sdoverω(J::LorentzianSD)
@@ -28,6 +34,7 @@ bfield(N, Δt, J::GenericSD, noise::Noise; distro=Normal(0., 1/sqrt(Δt)), inter
 
 ## Coupling tensor
 ```@docs
+Coupling
 AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}}
 IsoCoupling{TT<:Real}
 ```
