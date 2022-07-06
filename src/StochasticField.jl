@@ -1,5 +1,7 @@
 """
+```Julia
 bfield(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
+```
 
 Returns the stochastic field `b(t)`. It is evaluated using the Lorentzian spectral
 density defined by the parameters `J`, the classical/quantum/quantum-no-zero-energy noise.

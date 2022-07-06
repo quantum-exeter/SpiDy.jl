@@ -1,10 +1,19 @@
+"""
+```Julia
+Coupling
+```
+
+Definition of the abstract type `Coupling`.
+"""
 abstract type Coupling end
 
 """
+```Julia
 AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}}
+```
 
-Returns an object of type `Coupling` built by passing it a 3x3 `Matrix{Real}` which defines
-the n-dimentional coupling between the spin and the stochastic fields. The matrix  can therefore
+Returns a `AnisoCoupling` structure of type `Coupling` built by passing it a 3x3 `Matrix{Real}` which defines
+the n-dimentional coupling between the spin and the stochastic fields. The matrix can therefore
 define a 1D, 2D as well as a 3D coupling. 
 """
 struct AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}} <: Coupling
@@ -16,9 +25,11 @@ Base.getindex(coupling::AnisoCoupling{TT}, i::Int) where {TT<:AbstractMatrix{T} 
 Base.getindex(coupling::AnisoCoupling{TT}, I::Vararg{Int,N}) where {TT<:AbstractMatrix{T} where {T<:Real},N} = coupling.C[I...]
 
 """
+```Julia
 IsoCoupling{TT<:Real}
+```
 
-Returns an object of type `Coupling` built by passing it a single Real value which defines
+Returns a IsoCoupling of type `Coupling` built by passing it a single `Real` value which defines
 the n-dimentional isotropic coupling between the spin and the stochastic fields.
 """
 struct IsoCoupling{TT<:Real} <: Coupling
