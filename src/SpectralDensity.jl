@@ -12,8 +12,13 @@ abstract type GenericSD end
 LorentzianSD{T<:Real}
 ```
 
-Returns a `LorentzianSD` structure of type `GenericSD` built by passing a `Real` value.
-This allows for future overloading of the spectral density methods.
+Returns a `LorentzianSD` structure of type `GenericSD` built by passing 3 `Real` values.
+The values are ordered as `LorentzianSD(α, ω0, Γ)`.
+
+# Examples
+```julia-repl
+julia> LorentzianSD(1., 3., 8.)
+```
 """
 struct LorentzianSD{T<:Real} <: GenericSD
     α::T

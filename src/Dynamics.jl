@@ -18,7 +18,7 @@ in the solution saved at optimal time steps withing the entire time span.
 
 # Examples
 ```julia-repl
-julia> diffeqsolver(s0, tspan, J, bfields, matrix, saveat=((N*4÷5):1:N)*Δt)
+julia> diffeqsolver(s0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
 ```
 """
 function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1], saveat=[])
