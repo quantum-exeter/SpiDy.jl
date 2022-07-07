@@ -1,17 +1,27 @@
 """
 ```Julia
-diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1])
+diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1], saveat=[])
 ```
 
 Returns `[sol.t, s, sinterp]`, that is, the vector `sol.t` of time steps at which the solutions are evaluated,
 the 3-vector of the solutions `s[1]`, `s[2]`, `s[3]` evaluated at times `sol.t`,
 the 3 functions sinterp(t)[i] interpolations of the solutions `s[i]` found in the give time span.
 
-The differential equation solver is built to account for Lorentzian spectral density. The two keyword arguments of 
-the function are the spin length `S0` set at default value 1/2 and the vector of the external magnetic field
-`Bext` set as unit-vector along the z-axis direction as default, `Bext = [0, 0, 1]`.
+The differential equation solver is built to account for Lorentzian spectral density.
+
+Keyword arguments:
+- `S0` spin length set at default value 1/2, `S0=1/2`.
+- `Bext` external magnetic field set as unit-vector along the z-axis as default, `Bext = [0, 0, 1]`
+- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state,
+i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting
+in the solution saved at optimal time steps withing the entire time span.
+
+# Examples
+```julia-repl
+julia> diffeqsolver(s0, tspan, J, bfields, matrix, saveat=((N*4÷5):1:N)*Δt)
+```
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1])
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1], saveat=[])
 
     u0 = [s0[1], s0[2], s0[3], 0, 0, 0, 0, 0, 0]
     Cω2 = matrix.C*transpose(matrix.C)
@@ -26,8 +36,8 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=
         du[7:9] = -J.ω0^2*v -J.Γ*w +J.α*s
     end
     prob = ODEProblem(f, u0, tspan)
-    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7))
-    
+    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), saveat=saveat)
+
     s = zeros(length(sol.t), 3)
     for n in 1:length(sol.t)
         s[n, :] = sol.u[n][1:3]
