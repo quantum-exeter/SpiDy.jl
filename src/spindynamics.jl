@@ -23,30 +23,12 @@ matrix = AnisoCoupling([-sin(π/4) 0. 0.
 T = 10 .^ LinRange(-3, 3, 12)
 Sss = zeros(length(T), 3)
 
-navg = 1
-# p = Progress(length(T));
-# for n in 1:length(T)
-#     noise = ClassicalNoise(T[n]);
-#     s = zeros(navg, 3)
-#     Threads.@threads for i in 1:navg
-#         s0 = [0.8, 0., 0.6] #normalize(rand(3))
-#         bfields = [bfield(N, Δt, J, noise),
-#                    bfield(N, Δt, J, noise),
-#                    bfield(N, Δt, J, noise)];
-#         sol = diffeqsolver(s0, tspan, J, bfields, matrix; saveat=saveat);
-#         s[i, :] = mean(sol[2], dims=1)
-#     end
-#     Sss[n, :] = mean(s, dims=1)
-#     next!(p)
-# end
-
-# npzwrite("../notebooks/data_.npz", Dict("T" => T, "S" => Sss))
-
 noise = ClassicalNoise(1.);
 s0 = [0.8, 0., 0.6] #normalize(rand(3))
 bfields = [bfield(N, Δt, J, noise),
            bfield(N, Δt, J, noise),
            bfield(N, Δt, J, noise)];
+           
 sol = diffeqsolver(s0, tspan, J, bfields, matrix);
 
 npzwrite("../notebooks/data_dynamics_prm9_b(t)=0.npz", Dict("T" => sol[1], "S" => sol[2]))

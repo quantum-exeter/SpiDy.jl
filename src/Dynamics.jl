@@ -31,9 +31,9 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=
         s = @view u[1:3] # @view does not allocate values. No hard copy, just reference.
         v = @view u[4:6]
         w = @view u[7:9]
-        du[1:3] = cross(s, Bext + bn(t)/S0 + Cω2*v)
+        du[1:3] = -cross(s, Bext + bn(t) + Cω2*v)
         du[4:6] = w
-        du[7:9] = -J.ω0^2*v -J.Γ*w +J.α*s
+        du[7:9] = -(J.ω0^2)*v -J.Γ*w -J.α*s
     end
     prob = ODEProblem(f, u0, tspan)
     sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), saveat=saveat)
