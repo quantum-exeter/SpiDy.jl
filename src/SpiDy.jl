@@ -6,7 +6,6 @@ using FFTW
 using Random
 using Distributions
 using Interpolations
-using Sundials
 
 include("Noise.jl");
 include("SpectralDensity.jl");
