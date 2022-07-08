@@ -1,30 +1,34 @@
 include("./SpiDy.jl")
 using .SpiDy
-
 using NPZ
 using ProgressMeter
 using Random
 using Statistics
 using LinearAlgebra
 
-Δt = 0.15
-N = 72_000
+rescaling = true # use if you want to compare to python code
+if rescaling
+    cfac = 10*(1.76E11)*(1.05E-34)/(1.38E-23)/2
+else
+    cfac = 1
+end
+
+Δt = 0.3
+N = 100_000
 tspan = (0., N*Δt)
 saveat = ((N*4÷5):1:N)*Δt
 
 # Lorentzian(α, ω0, Γ)
 J = LorentzianSD(1., 7., 5.); # prm 5
 # J = LorentzianSD(100., 7., 5.); # prm 9
-
 matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
+T = 10 .^ LinRange(-3, 3, 24) / cfac
 
-T = 10 .^ LinRange(-3, 3, 12)
-Sss = zeros(length(T), 3)
-
-navg = 24
+navg = 48
 p = Progress(length(T));
+Sss = zeros(length(T), 3)
 
 for n in 1:length(T)
     noise = ClassicalNoise(T[n]);
@@ -41,4 +45,4 @@ for n in 1:length(T)
     next!(p)
 end
 
-npzwrite("../notebooks/data_prm5_fix.npz", Dict("T" => T, "S" => Sss))
+npzwrite("../notebooks/data_prm5_fix.npz", Dict("T" => T*cfac, "S" => Sss))
