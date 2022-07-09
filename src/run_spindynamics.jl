@@ -1,6 +1,5 @@
 include("./SpiDy.jl")
 using .SpiDy
-
 using NPZ
 using ProgressMeter
 using Random
