@@ -35,5 +35,5 @@ the n-dimentional isotropic coupling between the spin and the stochastic fields.
 struct IsoCoupling{TT<:Real} <: Coupling
     C::TT
 end
-Base.size(coupling::IsoCoupling{TT}) where {TT<:Real} = (3,3)
+Base.size(coupling::IsoCoupling{TT}) where {TT<:Real} = (1,1)
 Base.getindex(coupling::IsoCoupling{TT}, I::Vararg{Int,N}) where {TT<:Real,N} = I[1] == I[2] ? coupling.C : zero(TT)

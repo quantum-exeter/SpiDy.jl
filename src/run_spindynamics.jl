@@ -30,4 +30,4 @@ bfields = [bfield(N, Δt, J, noise),
            
 sol = diffeqsolver(s0, tspan, J, bfields, matrix);
 
-npzwrite("../notebooks/data_dynamics_prm9_b(t)=0.npz", Dict("T" => sol[1], "S" => sol[2]))
+npzwrite("./notebooks/data_dynamics_prm9_b(t)=0.npz", Dict("T" => sol[1], "S" => sol[2]))

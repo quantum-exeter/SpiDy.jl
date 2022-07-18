@@ -6,14 +6,14 @@ using Random
 using Statistics
 using LinearAlgebra
 
-rescaling = true # use if you want to compare to python code
+rescaling = false # use if you want to compare to python code
 if rescaling
     cfac = 10*(1.76E11)*(1.05E-34)/(1.38E-23)/2
 else
     cfac = 1
 end
 
-Δt = 0.3
+Δt = 0.15
 N = 100_000
 tspan = (0., N*Δt)
 saveat = ((N*4÷5):1:N)*Δt
@@ -26,7 +26,7 @@ matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         cos(π/4) 0. 0.]);
 T = 10 .^ LinRange(-3, 3, 24) / cfac
 
-navg = 48
+navg = 24 # number of stochastic field realizations to average
 p = Progress(length(T));
 Sss = zeros(length(T), 3)
 
@@ -45,4 +45,4 @@ for n in 1:length(T)
     next!(p)
 end
 
-npzwrite("../notebooks/data_prm5_fix.npz", Dict("T" => T*cfac, "S" => Sss))
+npzwrite("./notebooks/data_prm5_test.npz", Dict("T" => T*cfac, "S" => Sss))
