@@ -4,12 +4,13 @@ using ProgressMeter
 using Random
 using Statistics
 using LinearAlgebra
+using Plots
 
 ########################
 ########################
 
 Δt = 0.15
-N = 100_000
+N = 10_000
 tspan = (0., N*Δt)
 saveat = (0:1:N)*Δt
 
@@ -19,11 +20,11 @@ matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
 
-noise = ClassicalNoise(0.1);
+noise = ClassicalNoise(1.);
 
 s0 = [0., 0., -1.] # normalize(rand(3))
 
-navg = 10
+navg = 5
 
 ########################
 ########################

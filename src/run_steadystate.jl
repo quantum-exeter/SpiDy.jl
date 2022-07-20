@@ -4,6 +4,7 @@ using ProgressMeter
 using Random
 using Statistics
 using LinearAlgebra
+using Plots
 
 ########################
 ########################
