@@ -1,10 +1,12 @@
-include("./SpiDy.jl")
-using .SpiDy
+using SpiDy
 using NPZ
 using ProgressMeter
 using Random
 using Statistics
 using LinearAlgebra
+
+########################
+########################
 
 rescaling = false # use if you want to compare to python code
 if rescaling
@@ -18,15 +20,19 @@ N = 100_000
 tspan = (0., N*Δt)
 saveat = ((N*4÷5):1:N)*Δt
 
-# Lorentzian(α, ω0, Γ)
-J = LorentzianSD(1., 7., 5.); # prm 5
-# J = LorentzianSD(100., 7., 5.); # prm 9
+J = LorentzianSD(1., 7., 5.); # (α, ω0, Γ)
+
 matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
+
 T = 10 .^ LinRange(-3, 3, 24) / cfac
 
-navg = 24 # number of stochastic field realizations to average
+navg = 10 # number of stochastic field realizations to average
+
+########################
+########################
+
 p = Progress(length(T));
 Sss = zeros(length(T), 3)
 
@@ -34,7 +40,7 @@ for n in 1:length(T)
     noise = ClassicalNoise(T[n]);
     s = zeros(navg, 3)
     Threads.@threads for i in 1:navg
-        s0 = [0., 0., -1.] #normalize(rand(3))
+        s0 = [0., 0., -1.] # normalize(rand(3))
         bfields = [bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise)];
@@ -45,4 +51,16 @@ for n in 1:length(T)
     next!(p)
 end
 
-npzwrite("./notebooks/test.npz", Dict("T" => T*cfac, "S" => Sss))
+########################
+########################
+
+npzwrite("./steadystate.npz", Dict("T" => T*cfac, "S" => Sss))
+
+plot(saveat, Sss[:, 1], xscale=:log10, xlabel="T", ylabel="Sx")
+savefig("./sssx.pdf")
+
+plot(saveat, Sss[:, 2], xscale=:log10, xlabel="T", ylabel="Sy")
+savefig("./sssy.pdf")
+
+plot(saveat, Sss[:, 3], xscale=:log10, xlabel="T", ylabel="Sz")
+savefig("./sssz.pdf")

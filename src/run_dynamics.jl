@@ -1,31 +1,32 @@
-include("./SpiDy.jl")
-using .SpiDy
+using SpiDy
 using NPZ
 using ProgressMeter
 using Random
 using Statistics
 using LinearAlgebra
 
-################
+########################
+########################
 
-Δt = 0.00015
-N = 1000_000
+Δt = 0.15
+N = 100_000
 tspan = (0., N*Δt)
 saveat = (0:1:N)*Δt
 
-# Lorentzian(α, ω0, Γ)
-J = LorentzianSD(1., 7., 5.); # prm 5
-# J = LorentzianSD(100., 7., 5.); # prm 9
+J = LorentzianSD(1., 7., 5.); # (α, ω0, Γ)
 
 matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
+
 noise = ClassicalNoise(0.1);
-s0 = [0., 0., -1.] #normalize(rand(3))
+
+s0 = [0., 0., -1.] # normalize(rand(3))
 
 navg = 10
 
-###############
+########################
+########################
 
 p = Progress(navg);
 sols = zeros(navg, length(saveat), 3)
@@ -39,4 +40,16 @@ for i in 1:navg
 end
 solavg = mean(sols, dims=1)[1, :, :];
 
-npzwrite("./notebooks/test3.npz", Dict("T" => saveat, "S" => solavg))
+########################
+########################
+
+npzwrite("./dynamics.npz", Dict("t" => saveat, "S" => solavg))
+
+plot(saveat, solavg[:, 1], xlabel="t", ylabel="Sx")
+savefig("./sx.pdf")
+
+plot(saveat, solavg[:, 2], xlabel="t", ylabel="Sy")
+savefig("./sy.pdf")
+
+plot(saveat, solavg[:, 3], xlabel="t", ylabel="Sz")
+savefig("./sz.pdf")
