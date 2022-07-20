@@ -6,8 +6,10 @@ using Random
 using Statistics
 using LinearAlgebra
 
-Δt = 0.15
-N = 100_000
+################
+
+Δt = 0.00015
+N = 1000_000
 tspan = (0., N*Δt)
 saveat = (0:1:N)*Δt
 
@@ -18,10 +20,12 @@ J = LorentzianSD(1., 7., 5.); # prm 5
 matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
-noise = ClassicalNoise(1.);
+noise = ClassicalNoise(0.1);
 s0 = [0., 0., -1.] #normalize(rand(3))
 
-navg = 100
+navg = 10
+
+###############
 
 p = Progress(navg);
 sols = zeros(navg, length(saveat), 3)
@@ -35,4 +39,4 @@ for i in 1:navg
 end
 solavg = mean(sols, dims=1)[1, :, :];
 
-npzwrite("./notebooks/test.npz", Dict("T" => saveat, "S" => solavg))
+npzwrite("./notebooks/test3.npz", Dict("T" => saveat, "S" => solavg))
