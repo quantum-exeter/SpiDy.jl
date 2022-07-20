@@ -72,4 +72,4 @@ Returns the quantum noise at temperature `n.T` as a function of `ω`. The condit
 statement makes sure the function does not divide by zero in case of `ω==0`. It differs
 from `spectrum(n::QuantumNoise)` in the fact that the zero-point noise is removed.
 """
-spectrum(n::NoZeroQuantumNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/T/2) - sign(ω))
+spectrum(n::NoZeroQuantumNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2) - sign(ω))
