@@ -13,7 +13,7 @@ If you are a Windows/Mac user, <a href=https://julialang.org/downloads/>download
 
 If you are a Linux user, just open a terminal and use your package manager, e.g. on Debian-based distros run "sudo apt-get install julia", on RedHat-based distros run "sudo dnf install julia".
 
-## Install the package
+## Install SpiDy
 Following the Julia General Registry guidelines, the package can be installed as follows. *(NB: the entire installation of SpiDy and its dependencies takes about 5 minutes on a bare-bones Julia environment.)*
 
 Start Julia and enter in Pkg REPL mode by pressing **]** then run the following,
@@ -26,7 +26,7 @@ using Pkg;
 Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
 ```
 
-## Run the code
+## Run SpiDy
 To run the code,
 * save <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_dynamics.jl>run_dynamics.jl</a> or <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_steadystate.jl>run_steadystate.jl</a> in your preferred location (right click -> save as... should work to save the file)
 * open the terminal or command line
