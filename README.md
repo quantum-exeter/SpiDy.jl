@@ -4,13 +4,15 @@
 
 Spin-Dynamics Julia package. The code is a generalization of the results obtained in the paper <a href=https://doi.org/10.1088/1367-2630/ac4ef2>"Quantum Brownian motion for magnets"</a> to account for arbitrary dimensional system-bath coupling. The system considered is a quantized three-dimensional spin + environment Hamiltonian. The code solves a set of differential equations for the spin vector where the damping accounts for memory, arbitrary noise and arbitrary statistics.
 
+The classical simulations in anisotropic coupling found in the pre-print <a href=https://arxiv.org/abs/2204.10874>"Quantum-classical correspondence in spin-boson equilibrium states at arbitrary coupling"</a> have been generated using a very-early-version of this code.
+
 ## Install the package
-Following the Julia *General Registry*, the package can be installed as follows,
+Following the Julia *General Registry* guidelines, the package can be installed as follows,
 ```Julia
 using Pkg;
 Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
 ```
-or using the Pkg REPL mode as follows,
+or using the Pkg REPL mode (just start the Julia software),
 ```Julia
 ]
 add https://github.com/quantum-exeter/SpiDy.jl
