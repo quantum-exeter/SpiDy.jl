@@ -6,25 +6,44 @@ Spin-Dynamics Julia package. The code is a generalization of the results obtaine
 
 The classical simulations in anisotropic coupling found in the pre-print <a href=https://arxiv.org/abs/2204.10874>"Quantum-classical correspondence in spin-boson equilibrium states at arbitrary coupling"</a> have been generated using a very-early-version of this code.
 
+## Install Julia
+If you are new to Julia, here is how to install it.
+
+If you are a Windows/Mac user, <a href=https://julialang.org/downloads/>download Julia here</a> and run the installer. On Mac, drag-and-drop the app to the Applications.
+
+If you are a Linux user, just open a terminal and use your package manager, e.g. on Debian-based distros run "sudo apt-get install julia" or RedHat-based distros run "sudo dnf install julia".
+
 ## Install the package
-Following the Julia *General Registry* guidelines, the package can be installed as follows,
+Following the Julia *General Registry* guidelines, the package can be installed as follows.
+
+Start Julia and enter in Pkg REPL mode by pressing **]** then run the following,
+```Julia
+(@v1.7) pkg> add https://github.com/quantum-exeter/SpiDy.jl
+```
+or alternatively run the following lines in your code,
 ```Julia
 using Pkg;
 Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
 ```
-or using the Pkg REPL mode (just start the Julia software),
-```Julia
-]
-add https://github.com/quantum-exeter/SpiDy.jl
-```
 
 NB: The entire installation of SpiDy and its dependencies takes about 5 minutes on a bare-bones Julia environment.
+
+## Run the code
+To run the code,
+* save <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_dynamics.jl>run_dynamics.jl</a> or <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_steadystate.jl>run_steadystate.jl</a> in your preferred location (right click -> save as... should work to save the file)
+* open the terminal or command line
+* run the following command:
+```Julia
+julia "path-to-your-file"/run_dynamics.jl
+```
+where "path-to-your-file" is the one where you saved your file. Replace *run_dynamics.jl* with *run_steadystate.jl* to run the one of your choice.
 
 ## Repo structure
 * **.github/workflows**: contains the yml file to build the documentation and commit on the gh-pages branch
 * **docs**: contains the logos, make.jl and index.md for the generation of documentation
-* **notebooks**: contains jupyter notebooks to test the code
-* **src**: contains the code
+* **runs**: contains run_*.jl files which can be used as a template to run the code
+* **src**: contains the source code
+* **starthere**: contains a ipynb notebook written in Julia which walks you through bits and pieces of the code with explainatory plots *(the notebook is ready to use but in continuous development)*
 
 ## Online documentation
 Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/">this link</a>.
