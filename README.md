@@ -26,7 +26,7 @@ using Pkg;
 Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
 ```
 
-NB: The entire installation of SpiDy and its dependencies takes about 5 minutes on a bare-bones Julia environment.
+NB: the entire installation of SpiDy and its dependencies takes about 5 minutes on a bare-bones Julia environment.
 
 ## Run the code
 To run the code,
@@ -37,6 +37,13 @@ To run the code,
 julia "path-to-your-file"/run_dynamics.jl
 ```
 where "path-to-your-file" is the one where you saved your file. Replace *run_dynamics.jl* with *run_steadystate.jl* to run the one of your choice.
+
+NB: the code can exploit parallel computation. To do this, run your files as:
+```Julia
+julia -t 6 "path-to-your-file"/run_dynamics.jl
+```
+where you want to replace "6" with the number of threads that you wish to use. As a general idea, you do not want to use more than 80% of the number of threads you have available in your machine, e.g. if you have a 4-core CPU, you are likely to have 8 threads and you may want to run the parallelization as indicated above.
+
 
 ## Repo structure
 * **.github/workflows**: contains the yml file to build the documentation and commit on the gh-pages branch

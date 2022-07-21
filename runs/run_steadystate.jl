@@ -21,15 +21,15 @@ N = 100_000
 tspan = (0., N*Δt)
 saveat = ((N*4÷5):1:N)*Δt
 
-J = LorentzianSD(1., 7., 5.); # (α, ω0, Γ)
+J = LorentzianSD(10., 7., 5.); # (α, ω0, Γ)
 
 matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
 
-T = 10 .^ LinRange(-3, 3, 24) / cfac
+T = 10 .^ LinRange(-3, 3, 12) / cfac
 
-navg = 10 # number of stochastic field realizations to average
+navg = 4 # number of stochastic field realizations to average
 
 ########################
 ########################
@@ -57,11 +57,11 @@ end
 
 npzwrite("./steadystate.npz", Dict("T" => T*cfac, "S" => Sss))
 
-plot(saveat, Sss[:, 1], xscale=:log10, xlabel="T", ylabel="Sx")
+plot(saveat, Sss[:, 1], xscale=:log10, xlabel="T", ylabel="S_x")
 savefig("./sssx.pdf")
 
-plot(saveat, Sss[:, 2], xscale=:log10, xlabel="T", ylabel="Sy")
+plot(saveat, Sss[:, 2], xscale=:log10, xlabel="T", ylabel="S_y")
 savefig("./sssy.pdf")
 
-plot(saveat, Sss[:, 3], xscale=:log10, xlabel="T", ylabel="Sz")
+plot(saveat, Sss[:, 3], xscale=:log10, xlabel="T", ylabel="S_z")
 savefig("./sssz.pdf")
