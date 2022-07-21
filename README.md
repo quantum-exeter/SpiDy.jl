@@ -18,6 +18,8 @@ or using the Pkg REPL mode (just start the Julia software),
 add https://github.com/quantum-exeter/SpiDy.jl
 ```
 
+*The entire installation of SpiDy and its dependencies takes about 5 minutes on a bare-bones Julia environment.*
+
 ## Repo structure
 * **.github/workflows**: contains the yml file to build the documentation and commit on the gh-pages branch
 * **docs**: contains the logos, make.jl and index.md for the generation of documentation
