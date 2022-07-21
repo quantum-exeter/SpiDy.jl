@@ -34,6 +34,8 @@ navg = 6 # number of stochastic field realizations to average
 ########################
 ########################
 
+println("Starting...")
+
 p = Progress(length(T));
 Sss = zeros(length(T), 3)
 

@@ -29,8 +29,11 @@ navg = 6
 ########################
 ########################
 
+println("Starting...")
+
 p = Progress(navg);
 sols = zeros(navg, length(saveat), 3)
+
 Threads.@threads for i in 1:navg
     bfields = [bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise),
@@ -39,6 +42,7 @@ Threads.@threads for i in 1:navg
     sols[i, :, :] = sol[2]
     next!(p)
 end
+
 solavg = mean(sols, dims=1)[1, :, :];
 
 ########################
