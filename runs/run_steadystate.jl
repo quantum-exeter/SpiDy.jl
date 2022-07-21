@@ -16,7 +16,7 @@ else
     cfac = 1
 end
 
-Δt = 0.15
+Δt = 0.1
 N = 100_000
 tspan = (0., N*Δt)
 saveat = ((N*4÷5):1:N)*Δt
@@ -29,7 +29,7 @@ matrix = AnisoCoupling([-sin(π/4) 0. 0.
 
 T = 10 .^ LinRange(-3, 3, 12) / cfac
 
-navg = 4 # number of stochastic field realizations to average
+navg = 6 # number of stochastic field realizations to average
 
 ########################
 ########################
@@ -57,11 +57,11 @@ end
 
 npzwrite("./steadystate.npz", Dict("T" => T*cfac, "S" => Sss))
 
-plot(saveat, Sss[:, 1], xscale=:log10, xlabel="T", ylabel="S_x")
+plot(T, Sss[:, 1], xscale=:log10, xlabel="T", ylabel="S_x")
 savefig("./sssx.pdf")
 
-plot(saveat, Sss[:, 2], xscale=:log10, xlabel="T", ylabel="S_y")
+plot(T, Sss[:, 2], xscale=:log10, xlabel="T", ylabel="S_y")
 savefig("./sssy.pdf")
 
-plot(saveat, Sss[:, 3], xscale=:log10, xlabel="T", ylabel="S_z")
+plot(T, Sss[:, 3], xscale=:log10, xlabel="T", ylabel="S_z")
 savefig("./sssz.pdf")

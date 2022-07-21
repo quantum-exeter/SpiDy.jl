@@ -24,7 +24,7 @@ noise = ClassicalNoise(1.);
 
 s0 = [0., 0., -1.] # normalize(rand(3))
 
-navg = 4
+navg = 6
 
 ########################
 ########################
