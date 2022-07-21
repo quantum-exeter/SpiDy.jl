@@ -1,11 +1,15 @@
 module SpiDy
 
-using LinearAlgebra
 using DifferentialEquations
-using FFTW
-using Random
 using Distributions
+using FFTW
 using Interpolations
+using LinearAlgebra
+using NPZ
+using Plots
+using ProgressMeter
+using Random
+using Statistics
 
 include("Noise.jl");
 include("SpectralDensity.jl");
