@@ -18,7 +18,7 @@ Following the Julia *General Registry* guidelines, the package can be installed 
 
 Start Julia and enter in Pkg REPL mode by pressing **]** then run the following,
 ```Julia
-(@v1.7) pkg> add https://github.com/quantum-exeter/SpiDy.jl
+add https://github.com/quantum-exeter/SpiDy.jl
 ```
 or alternatively run the following lines in your code,
 ```Julia
