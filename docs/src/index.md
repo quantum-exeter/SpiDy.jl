@@ -1,6 +1,6 @@
 # SpiDy.jl documentation
 ```@contents
-Pages = ["Index" => "index.md",
+pages = ["Index" => "index.md",
          "Start with SpiDy" => "startwithspidy.md",
          "Noise" => "noise.md",
          "Spectral density" => "spectraldensity.md",
