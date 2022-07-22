@@ -6,6 +6,8 @@ using FFTW
 using Interpolations
 using LinearAlgebra
 using NPZ
+using DataFrames
+using CSV
 using Plots
 using ProgressMeter
 using Random

@@ -1,5 +1,7 @@
 using SpiDy
 using NPZ
+using DataFrames
+using CSV
 using ProgressMeter
 using Random
 using Statistics
@@ -48,8 +50,18 @@ solavg = mean(sols, dims=1)[1, :, :];
 ########################
 ########################
 
-npzwrite("./dynamics.npz", Dict("t" => saveat, "S" => solavg))
+### Save data NPZ ###
+npzwrite("./dynamics.npz", Dict("t" => saveat,
+                                "S" => solavg))
 
+### Save data CSV ###
+dataframe = DataFrame(t = saveat,
+                      Sx = solavg[:, 1],
+                      Sy = solavg[:, 2],
+                      Sz = solavg[:, 3])
+CSV.write("./dynamics.csv", dataframe)
+
+### Plots ###
 plot(saveat, solavg[:, 1], xlabel="t", ylabel="S_x")
 savefig("./sx.pdf")
 

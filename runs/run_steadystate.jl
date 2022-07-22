@@ -1,5 +1,7 @@
 using SpiDy
 using NPZ
+using DataFrames
+using CSV
 using ProgressMeter
 using Random
 using Statistics
@@ -50,8 +52,18 @@ end
 ########################
 ########################
 
-npzwrite("./steadystate.npz", Dict("T" => T, "S" => Sss))
+### Save data NPZ ###
+npzwrite("./steadystate.npz", Dict("T" => T,
+                                   "S" => Sss))
 
+### Save data CSV ###
+dataframe = DataFrame(T = T,
+                      Sssx = Sss[:, 1],
+                      Sssy = Sss[:, 2],
+                      Sssz = Sss[:, 3])
+CSV.write("./steadystate.csv", dataframe)
+
+### Plots ###
 plot(T, Sss[:, 1], xscale=:log10, xlabel="T", ylabel="S_x")
 savefig("./sssx.pdf")
 
