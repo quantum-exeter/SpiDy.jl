@@ -1,12 +1,12 @@
 # Start with SpiDy
-Spin-Dynamics Julia package. The code is a generalization of the results obtained in the paper <a href=https://doi.org/10.1088/1367-2630/ac4ef2>"Quantum Brownian motion for magnets"</a> to account for arbitrary dimensional system-bath coupling. The system considered is a quantized three-dimensional spin + environment Hamiltonian. The code solves a set of differential equations for the spin vector where the damping accounts for memory, arbitrary noise and arbitrary statistics.
+Spin-Dynamics Julia package. The code is a generalization of the results obtained in the paper ["Quantum Brownian motion for magnets"](https://doi.org/10.1088/1367-2630/ac4ef2) to account for arbitrary dimensional system-bath coupling. The system considered is a quantized three-dimensional spin + environment Hamiltonian. The code solves a set of differential equations for the spin vector where the damping accounts for memory, arbitrary noise and arbitrary statistics.
 
-The classical simulations in anisotropic coupling found in the pre-print <a href=https://arxiv.org/abs/2204.10874>"Quantum-classical correspondence in spin-boson equilibrium states at arbitrary coupling"</a> have been generated using a very-early-version of this code.
+The classical simulations in anisotropic coupling found in the pre-print ["Quantum-classical correspondence in spin-boson equilibrium states at arbitrary coupling"](https://arxiv.org/abs/2204.10874) have been generated using a very-early-version of this code.
 
 ## Install Julia
 If you are new to Julia, here is how to install it.
 
-If you are a Windows/Mac user, <a href=https://julialang.org/downloads/>download Julia here</a> and run the installer. On Mac, drag-and-drop the app to the Applications.
+If you are a Windows/Mac user, [download Julia here](https://julialang.org/downloads/) and run the installer. On Mac, drag-and-drop the app to the Applications.
 
 If you are a Linux user, just open a terminal and use your package manager, e.g. on Debian-based distros run "sudo apt-get install julia", on RedHat-based distros run "sudo dnf install julia".
 
@@ -25,7 +25,7 @@ Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
 
 ## Run SpiDy
 To run the code,
-* save <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_dynamics.jl>run_dynamics.jl</a> or <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_steadystate.jl>run_steadystate.jl</a> in your preferred location (right click -> save as... should work to save the file)
+* save [run_dynamics.jl](https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_dynamics.jl) and [run_steadystate.jl](https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_steadystate.jl) in your preferred location (right click -> save as... should work to save the file)
 * open the terminal or command line
 * run the following command,
 ```Julia
