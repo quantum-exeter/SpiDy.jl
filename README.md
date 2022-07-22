@@ -28,7 +28,7 @@ Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
 
 ## Run SpiDy
 To run the code,
-* save <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_dynamics.jl>run_dynamics.jl</a> or <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_steadystate.jl>run_steadystate.jl</a> in your preferred location (open the link -> right click on the page -> save as... should work to save the file)
+* save <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_dynamics.jl>run_dynamics.jl</a> and <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_steadystate.jl>run_steadystate.jl</a> in your preferred location (open the link -> right click on the page -> save as... should work to save the file)
 * open the terminal or command line
 * run the following command,
 ```Julia
