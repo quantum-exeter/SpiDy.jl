@@ -34,3 +34,4 @@ notebooks/plot.ipynb
 # Ignore data files
 *.npz
 *.csv
+*.pdf
