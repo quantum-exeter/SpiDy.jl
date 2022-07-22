@@ -28,13 +28,15 @@ Pkg.add(url="https://github.com/quantum-exeter/SpiDy.jl")
 
 ## Run SpiDy
 To run the code,
-* save <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_dynamics.jl>run_dynamics.jl</a> or <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_steadystate.jl>run_steadystate.jl</a> in your preferred location (right click -> save as... should work to save the file)
+* save <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_dynamics.jl>run_dynamics.jl</a> or <a href=https://raw.githubusercontent.com/quantum-exeter/SpiDy.jl/main/runs/run_steadystate.jl>run_steadystate.jl</a> in your preferred location (open the link -> right click on the page -> save as... should work to save the file)
 * open the terminal or command line
 * run the following command,
 ```Julia
 julia "path-to-your-file"/run_dynamics.jl
 ```
 where "path-to-your-file" is the one where you saved your file. Replace *run_dynamics.jl* with *run_steadystate.jl* to run the one of your choice.
+
+**This last command will run the code and save plots/datafile of the chosen run. CONGRATS, you have just run SpiDy for the first time!**
 
 NB: the code can exploit parallel computation. To do this, run your files as
 ```Julia
