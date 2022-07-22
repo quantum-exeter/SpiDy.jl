@@ -9,13 +9,6 @@ using Plots
 ########################
 ########################
 
-rescaling = false # use if you want to compare to python code
-if rescaling
-    cfac = 10*(1.76E11)*(1.05E-34)/(1.38E-23)/2
-else
-    cfac = 1
-end
-
 Δt = 0.1
 N = 100_000
 tspan = (0., N*Δt)
@@ -27,7 +20,7 @@ matrix = AnisoCoupling([-sin(π/4) 0. 0.
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
 
-T = 10 .^ LinRange(-3, 3, 12) / cfac
+T = 10 .^ LinRange(-3, 3, 12)
 
 navg = 6 # number of stochastic field realizations to average
 
@@ -57,7 +50,7 @@ end
 ########################
 ########################
 
-npzwrite("./steadystate.npz", Dict("T" => T*cfac, "S" => Sss))
+npzwrite("./steadystate.npz", Dict("T" => T, "S" => Sss))
 
 plot(T, Sss[:, 1], xscale=:log10, xlabel="T", ylabel="S_x")
 savefig("./sssx.pdf")
