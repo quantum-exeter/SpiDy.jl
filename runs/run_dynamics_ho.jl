@@ -32,7 +32,7 @@ navg = 10
 
 println("Starting...")
 
-p = Progress(navg);
+progress = Progress(navg);
 solx = zeros(navg, length(saveat), 3)
 solp = zeros(navg, length(saveat), 3)
 
@@ -43,7 +43,7 @@ Threads.@threads for i in 1:navg
     sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
     solx[i, :, :] = sol[2]
     solp[i, :, :] = sol[3]
-    next!(p)
+    next!(progress)
 end
 
 solavgx = mean(solx, dims=1)[1, :, :];

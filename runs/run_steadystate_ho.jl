@@ -29,7 +29,7 @@ navg = 6 # number of stochastic field realizations to average
 
 println("Starting...")
 
-p = Progress(length(T));
+progress = Progress(length(T));
 xss = zeros(length(T), 3)
 pss = zeros(length(T), 3)
 
@@ -49,26 +49,26 @@ for n in eachindex(T)
     end
     xss[n, :] = mean(x, dims=1)
     pss[n, :] = mean(p, dims=1)
-    next!(p)
+    next!(progress)
 end
 
 ########################
 ########################
 
 ### Save data NPZ ###
-npzwrite("./steadystate.npz", Dict("T" => T,
-                                   "x" => xss,
-                                   "p" => pss))
+# npzwrite("./steadystate.npz", Dict("T" => T,
+#                                    "x" => xss,
+#                                    "p" => pss))
 
 ### Save data CSV ###
-dataframe = DataFrame(T = T,
-                      xssx = xss[:, 1],
-                      xssy = xss[:, 2],
-                      xssz = xss[:, 3],
-                      pssx = pss[:, 1],
-                      pssy = pss[:, 2],
-                      pssz = pss[:, 3])
-CSV.write("./steadystate.csv", dataframe)
+# dataframe = DataFrame(T = T,
+#                       xssx = xss[:, 1],
+#                       xssy = xss[:, 2],
+#                       xssz = xss[:, 3],
+#                       pssx = pss[:, 1],
+#                       pssy = pss[:, 2],
+#                       pssz = pss[:, 3])
+# CSV.write("./steadystate.csv", dataframe)
 
 ### Plots ###
 plot(T, xss[:, 1], xscale=:log10, xlabel="T", ylabel="x_x")

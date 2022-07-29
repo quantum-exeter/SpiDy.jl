@@ -31,7 +31,7 @@ navg = 6 # number of stochastic field realizations to average
 
 println("Starting...")
 
-p = Progress(length(T));
+progress = Progress(length(T));
 Sss = zeros(length(T), 3)
 
 for n in eachindex(T)
@@ -46,7 +46,7 @@ for n in eachindex(T)
         s[i, :] = mean(sol[2], dims=1)
     end
     Sss[n, :] = mean(s, dims=1)
-    next!(p)
+    next!(progress)
 end
 
 ########################
