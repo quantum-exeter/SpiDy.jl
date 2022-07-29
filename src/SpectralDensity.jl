@@ -28,6 +28,25 @@ end
 
 """
 ```Julia
+OhmicSD{T<:Real}
+```
+
+Returns a `OhmicSD` structure of type `GenericSD` built by passing 3 `Real` values.
+The values are ordered as `OhmicSD(s, α, ωcut)`.
+
+# Examples
+```julia-repl
+julia> OhmicSD(1., 3., 100.)
+```
+"""
+struct PolySD{T<:Real} <: GenericSD
+    s::T
+    α::T
+    ωcut::T
+end
+
+"""
+```Julia
 sd(J::GenericSD)
 ```
 
@@ -61,6 +80,15 @@ sdoverω(J::LorentzianSD)
 Returns the spectral density divided by `ω` for `LorentzianSD` shapes which naturally defines `sd(J::LorentzianSD)`.
 """
 sdoverω(J::LorentzianSD) = ω -> (J.α*J.Γ/π)/((ω^2 - J.ω0^2)^2 + (J.Γ*ω)^2)
+
+"""
+```Julia
+sdoverω(J::PolySD)
+```
+
+Returns the spectral density divided by `ω` for `PolySD` shapes which naturally defines `sdoverω(J::PolySD)`.
+"""
+sd(J::PolySD) = ω -> 2 * J.α * J.ωcut^(1-s) * ω^s * exp(-ω/J.ωcut)
 
 """
 ```Julia

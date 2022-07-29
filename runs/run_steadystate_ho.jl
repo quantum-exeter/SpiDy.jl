@@ -12,7 +12,7 @@ using Plots
 ########################
 
 Δt = 0.1
-N = 100_000
+N = 50_000
 tspan = (0., N*Δt)
 saveat = ((N*4÷5):1:N)*Δt
 
@@ -22,7 +22,7 @@ matrix = IsoCoupling(1.);
 
 T = 10 .^ LinRange(-3, 3, 12)
 
-navg = 6 # number of stochastic field realizations to average
+navg = 10 # number of stochastic field realizations to average
 
 ########################
 ########################
@@ -44,8 +44,8 @@ for n in eachindex(T)
                    bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise)];
         sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
-        x[i, :] = mean(sol[2], dims=1)
-        p[i, :] = mean(sol[3], dims=1)
+        x[i, :] = mean(sol[2].^2, dims=1)
+        p[i, :] = mean(sol[3].^2, dims=1)
     end
     xss[n, :] = mean(x, dims=1)
     pss[n, :] = mean(p, dims=1)
