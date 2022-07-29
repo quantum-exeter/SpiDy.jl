@@ -34,7 +34,7 @@ println("Starting...")
 p = Progress(length(T));
 Sss = zeros(length(T), 3)
 
-for n in 1:length(T)
+for n in eachindex(T)
     noise = ClassicalNoise(T[n]);
     s = zeros(navg, 3)
     Threads.@threads for i in 1:navg
