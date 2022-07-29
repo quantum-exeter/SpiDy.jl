@@ -1,5 +1,4 @@
-include("../src/SpiDy.jl")
-using .SpiDy
+using SpiDy
 using NPZ
 using DataFrames
 using CSV
@@ -26,7 +25,7 @@ noise = ClassicalNoise(10.);
 x0 = [1., 0., 0.]
 p0 = [0., 0., 0.]
 
-navg = 1
+navg = 10
 
 ########################
 ########################
