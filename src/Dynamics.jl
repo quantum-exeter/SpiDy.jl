@@ -27,7 +27,7 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     
-    function f(du, u, p, t)
+    function f(du, u, par, t)
         s = @view u[1:3] # @view does not allocate values. No hard copy, just reference.
         v = @view u[4:6]
         w = @view u[7:9]
@@ -75,7 +75,7 @@ function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling;
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     
-    function f(du, u, t)
+    function f(du, u, par, t)
         x = @view u[1:3] # @view does not allocate values. No hard copy, just reference.
         p = @view u[4:6]
         v = @view u[7:9]

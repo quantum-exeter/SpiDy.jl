@@ -1,4 +1,5 @@
-using SpiDy
+include("../src/SpiDy.jl")
+using .SpiDy
 using NPZ
 using DataFrames
 using CSV
@@ -25,7 +26,7 @@ noise = ClassicalNoise(10.);
 x0 = [1., 0., 0.]
 p0 = [0., 0., 0.]
 
-navg = 20
+navg = 1
 
 ########################
 ########################
@@ -68,20 +69,20 @@ dataframe = DataFrame(t = saveat,
 CSV.write("./dynamics.csv", dataframe)
 
 ### Plots ###
-plot(saveat, solavg_x[:, 1], xlabel="t", ylabel="x_x")
+plot(saveat, solavgx[:, 1], xlabel="t", ylabel="x_x")
 savefig("./xx.pdf")
 
-plot(saveat, solavg[:, 2], xlabel="t", ylabel="x_y")
+plot(saveat, solavgx[:, 2], xlabel="t", ylabel="x_y")
 savefig("./xy.pdf")
 
-plot(saveat, solavg[:, 3], xlabel="t", ylabel="x_z")
+plot(saveat, solavgx[:, 3], xlabel="t", ylabel="x_z")
 savefig("./xz.pdf")
 
-plot(saveat, solavg_x[:, 1], xlabel="t", ylabel="p_x")
+plot(saveat, solavgp[:, 1], xlabel="t", ylabel="p_x")
 savefig("./px.pdf")
 
-plot(saveat, solavg[:, 2], xlabel="t", ylabel="p_y")
+plot(saveat, solavgp[:, 2], xlabel="t", ylabel="p_y")
 savefig("./py.pdf")
 
-plot(saveat, solavg[:, 3], xlabel="t", ylabel="p_z")
+plot(saveat, solavgp[:, 3], xlabel="t", ylabel="p_z")
 savefig("./pz.pdf")
