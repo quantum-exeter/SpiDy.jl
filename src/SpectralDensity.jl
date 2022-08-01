@@ -79,7 +79,7 @@ sdoverω(J::PolySD)
 
 Returns the spectral density for `PolySD` shapes which naturally defines `sdoverω(J::PolySD)`.
 """
-sd(J::PolySD) = ω -> 2*J.α * ω^s * J.ωcut^(1-s)*exp(-ω/J.ωcut)
+sd(J::PolySD) = ω -> 2*J.α * ω^J.s * J.ωcut^(1-J.s)*exp(-ω/J.ωcut)
 
 """
 ```Julia
