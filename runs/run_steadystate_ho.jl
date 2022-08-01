@@ -20,7 +20,7 @@ J = LorentzianSD(10., 7., 5.); # (α, ω0, Γ)
 
 matrix = IsoCoupling(1.);
 
-T = 10 .^ LinRange(-3, 3, 12)
+T = 10 .^ LinRange(-3, 3, 24)
 
 navg = 10 # number of stochastic field realizations to average
 
