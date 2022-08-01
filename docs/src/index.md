@@ -1,7 +1,7 @@
 # SpiDy.jl documentation
 ```@contents
 pages = ["Index" => "index.md",
-         "Start with SpiDy" => "startwithspidy.md",
+         "Start here" => "starthere.md",
          "Noise" => "noise.md",
          "Spectral density" => "spectraldensity.md",
          "Stochastic field" => "stochasticfield.md",
