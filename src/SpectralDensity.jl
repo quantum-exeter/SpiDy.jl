@@ -28,15 +28,15 @@ end
 
 """
 ```Julia
-OhmicSD{T<:Real}
+PolySD{T<:Real}
 ```
 
-Returns a `OhmicSD` structure of type `GenericSD` built by passing 3 `Real` values.
-The values are ordered as `OhmicSD(s, α, ωcut)`.
+Returns a `PolySD` structure of type `GenericSD` built by passing 3 `Real` values.
+The values are ordered as `PolySD(s, α, ωcut)`.
 
 # Examples
 ```julia-repl
-julia> OhmicSD(1., 3., 100.)
+julia> PolySD(1., 3., 100.)
 ```
 """
 struct PolySD{T<:Real} <: GenericSD
@@ -86,9 +86,9 @@ sdoverω(J::LorentzianSD) = ω -> (J.α*J.Γ/π)/((ω^2 - J.ω0^2)^2 + (J.Γ*ω)
 sdoverω(J::PolySD)
 ```
 
-Returns the spectral density divided by `ω` for `PolySD` shapes which naturally defines `sdoverω(J::PolySD)`.
+Returns the spectral density for `PolySD` shapes which naturally defines `sdoverω(J::PolySD)`.
 """
-sd(J::PolySD) = ω -> 2 * J.α * J.ωcut^(1-s) * ω^s * exp(-ω/J.ωcut)
+sd(J::PolySD) = ω -> 2*J.α * ω^s * J.ωcut^(1-s)*exp(-ω/J.ωcut)
 
 """
 ```Julia
@@ -98,7 +98,6 @@ reorgenergy(J::LorentzianSD)
 Returns the analytical reorganization energy for `LorentzianSD` shapes.
 """
 reorgenergy(J::LorentzianSD) = (J.α/J.ω0^2)/2
-
 
 """
 ```Julia
@@ -112,6 +111,17 @@ kernel(J::LorentzianSD) = ω -> J.α/(J.ω0^2 - ω^2 - 1im*ω*J.Γ)
 
 """
 ```Julia
+imagkernel(J::GenericSD)
+```
+
+Returns the imaginary part of the damping kernel for a Generic spectral density real and anti-symmetric in ω.
+Of this kind, we find Lorentzian spectral densities, and Polynomial spectral densities with ``s\\in\\mathbb{N}``
+The spectral density is defined by the parameters in `J`. It returns a function depending on `ω`.
+"""
+imagkernel(J::GenericSD) = ω -> π*sd(J::GenericSD)(ω)
+
+"""
+```Julia
 psd(J::GenericSD, noise::Noise)
 ```
 
@@ -119,9 +129,9 @@ Returns the power spectral density depending on parameters `J` and `noise`. The 
 function depends on `ω`.
 """
 function psd(J::GenericSD, noise::Noise)
-    K = kernel(J)
+    imagK = imagkernel(J)
     n = spectrum(noise)
-    psd(ω) = imag(K(ω))*n(ω)
+    psd(ω) = imagK(ω)*n(ω)
     return psd
 end
 
