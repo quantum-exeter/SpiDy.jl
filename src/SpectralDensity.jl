@@ -65,15 +65,6 @@ sdoverω(J::GenericSD) = ω -> sd(J)(ω)/ω
 
 """
 ```Julia
-reorgenergy(J::GenericSD)
-```
-
-Returns the reorganization energy numerically integrated as ``\\int_0^\\infty \\text{sdoverω}(\\omega)d\\omega``.
-"""
-reorgenergy(J::GenericSD) = quadgk(sdoverω(J), 0.0, Inf)[1]
-
-"""
-```Julia
 sdoverω(J::LorentzianSD)
 ```
 
@@ -89,6 +80,15 @@ sdoverω(J::PolySD)
 Returns the spectral density for `PolySD` shapes which naturally defines `sdoverω(J::PolySD)`.
 """
 sd(J::PolySD) = ω -> 2*J.α * ω^s * J.ωcut^(1-s)*exp(-ω/J.ωcut)
+
+"""
+```Julia
+reorgenergy(J::GenericSD)
+```
+
+Returns the reorganization energy numerically integrated as ``\\int_0^\\infty \\text{sdoverω}(\\omega)d\\omega``.
+"""
+reorgenergy(J::GenericSD) = quadgk(sdoverω(J), 0.0, Inf)[1]
 
 """
 ```Julia
