@@ -115,7 +115,7 @@ imagkernel(J::GenericSD)
 ```
 
 Returns the imaginary part of the damping kernel for a Generic spectral density real and anti-symmetric in ω.
-Of this kind, we find Lorentzian spectral densities, and Polynomial spectral densities with ``s\\in\\mathbb{N}``
+Of this kind, we find Lorentzian spectral densities, and Polynomial spectral densities with ``s\\in\\mathbb{N}``.
 The spectral density is defined by the parameters in `J`. It returns a function depending on `ω`.
 """
 imagkernel(J::GenericSD) = ω -> π*sd(J)(ω)
