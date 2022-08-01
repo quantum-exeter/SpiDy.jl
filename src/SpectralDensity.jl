@@ -50,7 +50,7 @@ end
 sd(J::GenericSD)
 ```
 
-Defines the spectral density for generic shapes `GenericSD`.
+Defines the spectral density for generic shapes `GenericSD`. The returned function depends on `ω`.
 """
 sd(J::GenericSD) = ω -> sdoverω(J)(ω)*ω
 
@@ -59,7 +59,7 @@ sd(J::GenericSD) = ω -> sdoverω(J)(ω)*ω
 sdoverω(J::GenericSD)
 ```
 
-Returns the spectral density divided by `ω` for generic shapes `GenericSD`.
+Returns the spectral density divided by `ω` for generic shapes `GenericSD`. The returned function depends on `ω`.
 """
 sdoverω(J::GenericSD) = ω -> sd(J)(ω)/ω
 
@@ -69,6 +69,7 @@ sdoverω(J::LorentzianSD)
 ```
 
 Returns the spectral density divided by `ω` for `LorentzianSD` shapes which naturally defines `sd(J::LorentzianSD)`.
+The returned function depends on `ω`.
 """
 sdoverω(J::LorentzianSD) = ω -> (J.α*J.Γ/π)/((ω^2 - J.ω0^2)^2 + (J.Γ*ω)^2)
 
@@ -77,7 +78,8 @@ sdoverω(J::LorentzianSD) = ω -> (J.α*J.Γ/π)/((ω^2 - J.ω0^2)^2 + (J.Γ*ω)
 sdoverω(J::PolySD)
 ```
 
-Returns the spectral density for `PolySD` shapes which naturally defines `sdoverω(J::PolySD)`.
+Returns the spectral density for `PolySD` shapes which naturally defines `sdoverω(J::PolySD)`. The returned
+function depends on `ω`.
 """
 sd(J::PolySD) = ω -> 2*J.α * ω^J.s * J.ωcut^(1-J.s)*exp(-ω/J.ωcut)
 
@@ -105,7 +107,7 @@ kernel(J::LorentzianSD)
 ```
 
 Returns the specific damping kernel for a Lorentzian spectral density defined by the
-parameters in `J`. It returns a function depending on `ω`.
+parameters in `J`. The returned function depends on `ω`.
 """
 kernel(J::LorentzianSD) = ω -> J.α/(J.ω0^2 - ω^2 - 1im*ω*J.Γ)
 
@@ -116,7 +118,7 @@ imagkernel(J::GenericSD)
 
 Returns the imaginary part of the damping kernel for a Generic spectral density real and anti-symmetric in ω.
 Of this kind, we find Lorentzian spectral densities, and Polynomial spectral densities with ``s\\in\\mathbb{N}``.
-The spectral density is defined by the parameters in `J`. It returns a function depending on `ω`.
+The spectral density is defined by the parameters in `J`. The returned function depends on `ω`.
 """
 imagkernel(J::GenericSD) = ω -> π*sd(J)(ω)
 
@@ -141,6 +143,6 @@ psd(J::LorentzianSD, noise::ClassicalNoise)
 ```
 
 Returns the analytical expression for power spectrum depending on Lorentzian spectral
-density and Classical noise.
+density and Classical noise. The returned function depends on `ω`.
 """
 psd(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)
