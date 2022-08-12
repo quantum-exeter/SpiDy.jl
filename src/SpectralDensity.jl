@@ -78,7 +78,7 @@ sdoverω(J::LorentzianSD) = ω -> (J.α*J.Γ/π)/((ω^2 - J.ω0^2)^2 + (J.Γ*ω)
 sdoverω(J::PolySD)
 ```
 
-Returns the spectral density for `PolySD` shapes which naturally defines `sdoverω(J::PolySD)`. The returned
+Returns the spectral density for `PolySD` shapes with exponential cut-off which naturally defines `sdoverω(J::PolySD)`. The returned
 function depends on `ω`.
 """
 sd(J::PolySD) = ω -> 2*J.α * ω^J.s * J.ωcut^(1-J.s)*exp(-ω/J.ωcut)
