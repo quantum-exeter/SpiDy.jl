@@ -21,7 +21,7 @@ end
 
 """
 ```Julia
-ClassicalNoise{TT<:Real}
+QuantumNoise{TT<:Real}
 ```
 
 Returns a `QuantumNoise` structure of type `Noise` built by passing a `Real` value.
@@ -33,7 +33,7 @@ end
 
 """
 ```Julia
-ClassicalNoise{TT<:Real}
+NoZeroQuantumNoise{TT<:Real}
 ```
 
 Returns a `NoZeroQuantumNoise` structure of type `Noise` built by passing a `Real` value.
