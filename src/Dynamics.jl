@@ -53,13 +53,13 @@ diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; Ω=1.0, 
 ```
 
 Returns `[sol.t, x, p, xinterp, pinterp]`, that is, the vector `sol.t` of time steps at which the solutions are evaluated,
-the vectors of the solutions `x`, `p` evaluated at times `sol.t`,
+the vectors of the solutions positions `x` and momenta `p` evaluated at times `sol.t`,
 the functions xinterp(t), pinterp(t) interpolations of the solutions found in the given time span.
 
 The differential equation solver is built to account for Lorentzian spectral density.
 
 Keyword arguments:
-- `Ω` external magnetic field set as unit-vector along the z-axis as default, `Ω=1.0`
+- `Ω` harmonic oscillator bare frequency set as default to `Ω=1.0`
 - `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state,
 i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting
 in the solution saved at optimal time steps withing the entire time span.
