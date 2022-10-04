@@ -21,28 +21,34 @@ in the solution saved at optimal time steps withing the entire time span.
 julia> diffeqsolver(s0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
 ```
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1], saveat=[])
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[])
 
-    u0 = [s0[1], s0[2], s0[3], 0, 0, 0, 0, 0, 0]
+    N = div(length(s0), 3)
+    print(N)
+    u0 = vcat(s0, [0, 0, 0, 0, 0, 0])
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     
     function f(du, u, par, t)
-        s = @view u[1:3] # @view does not allocate values. No hard copy, just reference.
-        v = @view u[4:6]
-        w = @view u[7:9]
-        du[1:3] = -cross(s, Bext + bn(t) + Cω2*v)
-        du[4:6] = w
-        du[7:9] = -(J.ω0^2)*v -J.Γ*w -J.α*s
+        s = @view u[1:3*N] # @view does not allocate values. No hard copy, just reference.
+        v = @view u[3*N+1:3*N+3]
+        w = @view u[3*N+4:3*N+6]
+        for i in 1:N
+            # du[1*i:3*i] = -cross(s[1*i:3*i], Bext + bn(t) + Cω2*v + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
+            du[1+(i-1)*3:3+(i-1)*3] = -cross(s[1+(i-1)*3:3+(i-1)*3], Bext + bn(t) + Cω2*v + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
+        end
+        du[3*N+1:3*N+3] = w
+        du[3*N+4:3*N+6] = -(J.ω0^2)*v -J.Γ*w -J.α*sum([s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
+
     end
     prob = ODEProblem(f, u0, tspan)
     sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), saveat=saveat)
 
-    s = zeros(length(sol.t), 3)
+    s = zeros(length(sol.t), 3*N)
     for n in 1:length(sol.t)
-        s[n, :] = sol.u[n][1:3]
+        s[n, :] = sol.u[n][1:3*N]
     end
-    sinterp = t -> sol(t)[1:3]
+    sinterp = t -> sol(t)[1:3*N]
     
     return sol.t, s, sinterp
 end
