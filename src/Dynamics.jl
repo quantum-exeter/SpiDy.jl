@@ -1,20 +1,20 @@
 """
 ```Julia
-diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; S0=1/2, Bext=[0, 0, 1], saveat=[])
+diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[])
 ```
 
 Returns `[sol.t, s, sinterp]`, that is, the vector `sol.t` of time steps at which the solutions are evaluated,
-the 3-vector of the solutions `s[1]`, `s[2]`, `s[3]` evaluated at times `sol.t`,
-the 3 functions sinterp(t)[i] interpolations of the solutions `s[i]` found in the given time span.
+the 3-vector solution `s[:, 1+(i-1)*3]`, `s[:, 2+(i-1)*3]`, `s[:, 3+(i-1)*3]` relative to the spin `i` is evaluated at times `sol.t`,
+the 3 functions `sinterp(t)[1+(i-1)*3]``, `sinterp(t)[2+(i-1)*3]`, `sinterp(t)[3+(i-1)*3]` are the interpolations of the relative 
+solutions `s` found in the given time span.
 
 The differential equation solver is built to account for Lorentzian spectral density.
 
 Keyword arguments:
+- `JH` is the Heisenberg coupling matrix. Note that this have to be a symmetric matrix with zero diagonal.
 - `S0` spin length set at default value 1/2, `S0=1/2`.
 - `Bext` external magnetic field set as unit-vector along the z-axis as default, `Bext = [0, 0, 1]`
-- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state,
-i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting
-in the solution saved at optimal time steps withing the entire time span.
+- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution saved at optimal time steps withing the entire time span.
 
 # Examples
 ```julia-repl
@@ -34,7 +34,6 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
         v = @view u[3*N+1:3*N+3]
         w = @view u[3*N+4:3*N+6]
         for i in 1:N
-            # du[1*i:3*i] = -cross(s[1*i:3*i], Bext + bn(t) + Cω2*v + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
             du[1+(i-1)*3:3+(i-1)*3] = -cross(s[1+(i-1)*3:3+(i-1)*3], Bext + bn(t) + Cω2*v + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
         end
         du[3*N+1:3*N+3] = w
