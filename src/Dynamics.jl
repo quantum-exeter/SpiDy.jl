@@ -14,7 +14,7 @@ Keyword arguments:
 - `JH` is the Heisenberg coupling matrix. Note that this have to be a symmetric matrix with zero diagonal. The preset value is the additive identity of the UniformScaling type, `JH=zero(I)`.
 - `S0` spin length set at default value 1/2, `S0=1/2`.
 - `Bext` external magnetic field set as unit-vector along the z-axis as default, `Bext = [0, 0, 1]`
-- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution saved at optimal time steps withing the entire time span.
+- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution being saved at optimal time steps within the time span.
 
 # Examples
 ```julia-repl
@@ -65,9 +65,7 @@ The differential equation solver is built to account for Lorentzian spectral den
 
 Keyword arguments:
 - `Ω` harmonic oscillator bare frequency set as default to `Ω=1.0`
-- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state,
-i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting
-in the solution saved at optimal time steps withing the entire time span.
+- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution being saved at optimal time steps within the time span.
 
 # Examples
 ```julia-repl
