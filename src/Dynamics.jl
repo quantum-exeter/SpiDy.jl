@@ -5,7 +5,7 @@ diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), 
 
 Returns `[sol.t, s, sinterp]`, that is, the vector `sol.t` of time steps at which the solutions are evaluated,
 the 3-vector solution `s[:, 1+(i-1)*3]`, `s[:, 2+(i-1)*3]`, `s[:, 3+(i-1)*3]` relative to the spin `i` is evaluated at times `sol.t`,
-the 3 functions `sinterp(t)[1+(i-1)*3]``, `sinterp(t)[2+(i-1)*3]`, `sinterp(t)[3+(i-1)*3]` are the interpolations of the relative 
+the 3 functions `sinterp(t)[1+(i-1)*3]`, `sinterp(t)[2+(i-1)*3]`, `sinterp(t)[3+(i-1)*3]` are the interpolations of the relative 
 solutions `s` found in the given time span.
 
 The differential equation solver is built to account for Lorentzian spectral density.
