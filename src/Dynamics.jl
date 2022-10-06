@@ -3,17 +3,17 @@
 diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[])
 ```
 
-Returns `[sol.t, s, sinterp]`, that is, the vector `sol.t` of time steps at which the solutions are evaluated,
-the 3-vector solution `s[:, 1+(i-1)*3]`, `s[:, 2+(i-1)*3]`, `s[:, 3+(i-1)*3]` relative to the spin `i` is evaluated at times `sol.t`,
-the 3 functions `sinterp(t)[1+(i-1)*3]`, `sinterp(t)[2+(i-1)*3]`, `sinterp(t)[3+(i-1)*3]` are the interpolations of the relative 
-solutions `s` found in the given time span.
+Returns `[sol.t, s, sinterp]`, that is,
+- the vector `sol.t` of time steps at which the solutions are evaluated,
+- the 3-vector solution `s[:, 1+(i-1)*3]`, `s[:, 2+(i-1)*3]`, `s[:, 3+(i-1)*3]` relative to the spin `i` is evaluated at times `sol.t`,
+- the 3 functions `sinterp(t)[1+(i-1)*3]`, `sinterp(t)[2+(i-1)*3]`, `sinterp(t)[3+(i-1)*3]` are the interpolations of the relative solutions `s` found in the given time span.
 
 The differential equation solver is built to account for Lorentzian spectral density.
 
 Keyword arguments:
 - `JH` is the Heisenberg coupling matrix. Note that this have to be a symmetric matrix with zero diagonal. The preset value is the additive identity of the UniformScaling type, `JH=zero(I)`.
 - `S0` spin length set at default value 1/2, `S0=1/2`.
-- `Bext` external magnetic field set as unit-vector along the z-axis as default, `Bext = [0, 0, 1]`
+- `Bext` external magnetic field set as unit-vector along the z-axis as default, `Bext = [0, 0, 1]`.
 - `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution being saved at optimal time steps within the time span.
 
 # Examples
@@ -57,14 +57,15 @@ end
 diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; Ω=1.0, saveat=[])
 ```
 
-Returns `[sol.t, x, p, xinterp, pinterp]`, that is, the vector `sol.t` of time steps at which the solutions are evaluated,
-the vectors of the solutions positions `x` and momenta `p` evaluated at times `sol.t`,
-the functions xinterp(t), pinterp(t) interpolations of the solutions found in the given time span.
+Returns `[sol.t, x, p, xinterp, pinterp]`, that is,
+- the vector `sol.t` of time steps at which the solutions are evaluated,
+- the vectors of the solutions positions `x` and momenta `p` evaluated at times `sol.t`,
+- the functions xinterp(t), pinterp(t) interpolations of the solutions found in the given time span.
 
 The differential equation solver is built to account for Lorentzian spectral density.
 
 Keyword arguments:
-- `Ω` harmonic oscillator bare frequency set as default to `Ω=1.0`
+- `Ω` harmonic oscillator bare frequency set as default to `Ω=1.0`.
 - `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution being saved at optimal time steps within the time span.
 
 # Examples
