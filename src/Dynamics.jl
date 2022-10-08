@@ -40,15 +40,8 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
 
     end
     prob = ODEProblem(f, u0, tspan)
-    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), saveat=saveat)
-
-    s = zeros(length(sol.t), 3*N)
-    for n in 1:length(sol.t)
-        s[n, :] = sol.u[n][1:3*N]
-    end
-    sinterp = t -> sol(t)[1:3*N]
-    
-    return sol.t, s, sinterp
+    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat)
+    return sol
 end
 
 """
@@ -101,5 +94,4 @@ function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling;
     pinterp = t -> sol(t)[4:6]
     
     return sol.t, x, p, xinterp, pinterp
-
 end
