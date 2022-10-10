@@ -78,14 +78,16 @@ function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling;
     u0 = [x0[1], x0[2], x0[3], p0[1], p0[2], p0[3], 0, 0, 0, 0, 0, 0]
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
+    Cω2v = zeros(3)
     
     function f(du, u, par, t)
         x = @view u[1:3] # @view does not allocate values. No hard copy, just reference.
         p = @view u[4:6]
         v = @view u[7:9]
         w = @view u[10:12]
+        Beff = bn(t) + mul!(Cω2v, Cω2, v)
         du[1:3] = p
-        du[4:6] = -(Ω^2)*x + bn(t) + Cω2*v
+        du[4:6] = -(Ω^2)*x + Beff
         du[7:9] = w
         du[10:12] = -(J.ω0^2)*v -J.Γ*w + J.α*x
     end
