@@ -27,17 +27,18 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
     u0 = vcat(s0, [0, 0, 0, 0, 0, 0])
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
+    Cω2v = zeros(3)
     
     function f(du, u, par, t)
         s = @view u[1:3*N] # @view does not allocate values. No hard copy, just reference.
         v = @view u[3*N+1:3*N+3]
         w = @view u[3*N+4:3*N+6]
+        Beff = Bext + bn(t) + mul!(Cω2v, Cω2, v)
         for i in 1:N
-            du[1+(i-1)*3:3+(i-1)*3] = -cross(s[1+(i-1)*3:3+(i-1)*3], Bext + bn(t) + Cω2*v + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
+            du[1+(i-1)*3:3+(i-1)*3] = -cross(s[1+(i-1)*3:3+(i-1)*3], Beff + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
         end
         du[3*N+1:3*N+3] = w
         du[3*N+4:3*N+6] = -(J.ω0^2)*v -J.Γ*w -J.α*sum([s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
-
     end
     prob = ODEProblem(f, u0, tspan)
     sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), saveat=saveat)
