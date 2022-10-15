@@ -85,16 +85,6 @@ function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling;
         du[10:12] = -(J.ω0^2)*v -J.Γ*w + J.α*x
     end
     prob = ODEProblem(f, u0, tspan)
-    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), saveat=saveat)
-
-    x = zeros(length(sol.t), 3)
-    p = zeros(length(sol.t), 3)
-    for n in 1:length(sol.t)
-        x[n, :] = sol.u[n][1:3]
-        p[n, :] = sol.u[n][4:6]
-    end
-    xinterp = t -> sol(t)[1:3]
-    pinterp = t -> sol(t)[4:6]
-    
-    return sol.t, x, p, xinterp, pinterp
+    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), save_idxs=1:6, saveat=saveat)
+    return sol
 end
