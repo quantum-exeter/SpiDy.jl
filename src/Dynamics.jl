@@ -28,12 +28,13 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     Cω2v = zeros(3)
+    Beff = zeros(3)
     
     function f(du, u, par, t)
         s = @view u[1:3*N] # @view does not allocate values. No hard copy, just reference.
         v = @view u[1+3*N:3+3*N]
         w = @view u[4+3*N:6+3*N]
-        Beff = Bext + bn(t) + mul!(Cω2v, Cω2, v)
+        Beff .= Bext + bn(t) + mul!(Cω2v, Cω2, v)
         for i in 1:N
             du[1+(i-1)*3:3+(i-1)*3] = -cross(s[1+(i-1)*3:3+(i-1)*3], Beff + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
         end
@@ -72,13 +73,14 @@ function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling;
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     Cω2v = zeros(3)
+    Beff = zeros(3)
     
     function f(du, u, par, t)
         x = @view u[1:3] # @view does not allocate values. No hard copy, just reference.
         p = @view u[4:6]
         v = @view u[7:9]
         w = @view u[10:12]
-        Beff = bn(t) + mul!(Cω2v, Cω2, v)
+        Beff .= bn(t) + mul!(Cω2v, Cω2, v)
         du[1:3] = p
         du[4:6] = -(Ω^2)*x + Beff
         du[7:9] = w
