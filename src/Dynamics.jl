@@ -22,16 +22,14 @@ julia> diffeqsolver(s0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
 ```
 """
 function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[])
-
     N = div(length(s0), 3)
     u0 = vcat(s0, [0, 0, 0, 0, 0, 0])
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     Cω2v = zeros(3)
     Beff = zeros(3)
-    
     function f(du, u, par, t)
-        s = @view u[1:3*N] # @view does not allocate values. No hard copy, just reference.
+        s = @view u[1:3*N]
         v = @view u[1+3*N:3+3*N]
         w = @view u[4+3*N:6+3*N]
         Beff .= Bext + bn(t) + mul!(Cω2v, Cω2, v)
@@ -67,26 +65,27 @@ Keyword arguments:
 julia> diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
 ```
 """
-function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; Ω=1.0, saveat=[])
-
-    u0 = [x0[1], x0[2], x0[3], p0[1], p0[2], p0[3], 0, 0, 0, 0, 0, 0]
+function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[])
+    N = div(length(x0), 3)
+    u0 = vcat(x0, p0, [0, 0, 0, 0, 0, 0])
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     Cω2v = zeros(3)
     Beff = zeros(3)
-    
     function f(du, u, par, t)
-        x = @view u[1:3] # @view does not allocate values. No hard copy, just reference.
-        p = @view u[4:6]
-        v = @view u[7:9]
-        w = @view u[10:12]
+        x = @view u[1:3*N]
+        p = @view u[1+3*N:6*N]
+        v = @view u[1+6*N:3+6*N]
+        w = @view u[4+6*N:6+6*N]
         Beff .= bn(t) + mul!(Cω2v, Cω2, v)
-        du[1:3] = p
-        du[4:6] = -(Ω^2)*x + Beff
-        du[7:9] = w
-        du[10:12] = -(J.ω0^2)*v -J.Γ*w + J.α*x
+        for i in 1:N
+            du[1+(i-1)*3:3+(i-1)*3] = p[1+(i-1)*3:3+(i-1)*3]
+            du[1+3*N+(i-1)*3:3+3*N+(i-1)*3] = -(Ω^2)*x[1+(i-1)*3:3+(i-1)*3] + Beff + sum([JH[i,j] * x[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
+        end
+        du[1+6*N:3+6*N] = w
+        du[4+6*N:6+6*N] = -(J.ω0^2)*v -J.Γ*w +J.α*sum([x[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
     end
     prob = ODEProblem(f, u0, tspan)
-    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), save_idxs=1:6, saveat=saveat)
+    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), save_idxs=1:6*N, saveat=saveat)
     return sol
 end
