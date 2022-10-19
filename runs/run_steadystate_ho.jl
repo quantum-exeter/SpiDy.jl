@@ -44,8 +44,8 @@ for n in eachindex(T)
                    bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise)];
         sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
-        x[i, :] = mean(sol[2].^2, dims=1)
-        p[i, :] = mean(sol[3].^2, dims=1)
+        x[i, :] = mean(sol[1:3, :].^2, dims=2)
+        p[i, :] = mean(sol[4:6, :].^2, dims=2)
     end
     xss[n, :] = mean(x, dims=1)
     pss[n, :] = mean(p, dims=1)

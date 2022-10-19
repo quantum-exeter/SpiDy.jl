@@ -41,8 +41,8 @@ Threads.@threads for i in 1:navg
                bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise)];
     sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
-    solx[i, :, :] = sol[2]
-    solp[i, :, :] = sol[3]
+    solx[i, :, :] = transpose(sol[1:3, :])
+    solp[i, :, :] = transpose(sol[4:6, :])
     next!(progress)
 end
 

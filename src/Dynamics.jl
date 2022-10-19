@@ -28,12 +28,13 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     Cω2v = zeros(3)
+    Beff = zeros(3)
     
     function f(du, u, par, t)
         s = @view u[1:3*N] # @view does not allocate values. No hard copy, just reference.
         v = @view u[1+3*N:3+3*N]
         w = @view u[4+3*N:6+3*N]
-        Beff = Bext + bn(t) + mul!(Cω2v, Cω2, v)
+        Beff .= Bext + bn(t) + mul!(Cω2v, Cω2, v)
         for i in 1:N
             du[1+(i-1)*3:3+(i-1)*3] = -cross(s[1+(i-1)*3:3+(i-1)*3], Beff + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
         end
@@ -41,15 +42,8 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
         du[4+3*N:6+3*N] = -(J.ω0^2)*v -J.Γ*w -J.α*sum([s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
     end
     prob = ODEProblem(f, u0, tspan)
-    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), saveat=saveat)
-
-    s = zeros(length(sol.t), 3*N)
-    for n in 1:length(sol.t)
-        s[n, :] = sol.u[n][1:3*N]
-    end
-    sinterp = t -> sol(t)[1:3*N]
-    
-    return sol.t, s, sinterp
+    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat)
+    return sol
 end
 
 """
@@ -79,30 +73,20 @@ function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling;
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     Cω2v = zeros(3)
+    Beff = zeros(3)
     
     function f(du, u, par, t)
         x = @view u[1:3] # @view does not allocate values. No hard copy, just reference.
         p = @view u[4:6]
         v = @view u[7:9]
         w = @view u[10:12]
-        Beff = bn(t) + mul!(Cω2v, Cω2, v)
+        Beff .= bn(t) + mul!(Cω2v, Cω2, v)
         du[1:3] = p
         du[4:6] = -(Ω^2)*x + Beff
         du[7:9] = w
         du[10:12] = -(J.ω0^2)*v -J.Γ*w + J.α*x
     end
     prob = ODEProblem(f, u0, tspan)
-    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), saveat=saveat)
-
-    x = zeros(length(sol.t), 3)
-    p = zeros(length(sol.t), 3)
-    for n in 1:length(sol.t)
-        x[n, :] = sol.u[n][1:3]
-        p[n, :] = sol.u[n][4:6]
-    end
-    xinterp = t -> sol(t)[1:3]
-    pinterp = t -> sol(t)[4:6]
-    
-    return sol.t, x, p, xinterp, pinterp
-
+    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), save_idxs=1:6, saveat=saveat)
+    return sol
 end
