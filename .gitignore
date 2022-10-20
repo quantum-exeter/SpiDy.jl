@@ -35,3 +35,6 @@ notebooks/plot.ipynb
 *.npz
 *.csv
 *.pdf
+
+# Ignore test folders
+data_test/
