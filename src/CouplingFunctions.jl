@@ -1,6 +1,5 @@
 """
 ```Julia
-diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[])
 NNChain(N, J0=1; boundary=nothing)
 ```
 
@@ -33,7 +32,6 @@ end
 
 """
 ```Julia
-diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[])
 NNSquareLattice(L, Jh=1, Jv=1; boundary=nothing)
 ```
 
