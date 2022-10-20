@@ -17,13 +17,14 @@ include("Noise.jl");
 include("SpectralDensity.jl");
 include("StochasticField.jl");
 include("CouplingTensor.jl");
+include("CouplingFunctions.jl");
 include("Dynamics.jl");
 
 # export external files to build documentation
-export Noise, SpectralDensity, StochasticField, CouplingTensor, Dynamics
+export Noise, SpectralDensity, StochasticField, CouplingTensor, CouplingFunctions, Dynamics
 # export structures to build documentation
 export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, GenericSD, LorentzianSD, PolySD, Coupling, AnisoCoupling, IsoCoupling
 # export modules and functions to build documentation
-export spectrum, sd, sdoverω, reorgenergy, kernel, imagkernel, psd, bfield, diffeqsolver
+export spectrum, sd, sdoverω, reorgenergy, kernel, imagkernel, psd, bfield, NNChain, NNSquareLattice, diffeqsolver
 
 end
