@@ -21,14 +21,14 @@ Keyword arguments:
 julia> diffeqsolver(s0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
 ```
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], project=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
     u0 = [s0; [0, 0, 0, 0, 0, 0]]
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
-    Cω2v = zeros(3)
-    Beff = zeros(3)
-    function f(du, u, par, t)
+    function f(du, u, (Cω2v, Beff), par, t)
+        Cω2v = get_tmp(Cω2v, u)
+        Beff = get_tmp(Beff, u)
         s = @view u[1:3*N]
         v = @view u[1+3*N:3+3*N]
         w = @view u[4+3*N:6+3*N]
@@ -39,8 +39,22 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
         du[1+3*N:3+3*N] = w
         du[4+3*N:6+3*N] = -(J.ω0^2)*v -J.Γ*w -J.α*sum([s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
     end
-    prob = ODEProblem(f, u0, tspan)
-    sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat)
+    prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(3))))
+
+    condition(u, t, integrator) = true
+    function affect!(integrator)
+        for n in 1:N
+            integrator.u[1+(n-1)*3:3+(n-1)*3] ./= norm(integrator.u[1+(n-1)*3:3+(n-1)*3])
+        end
+    end
+    cb = DiscreteCallback(condition, affect!, save_positions=(false,true))
+    if project
+        skwargs = (callback=cb,)
+    else
+        skwargs = NamedTuple()
+    end
+
+    sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat; skwargs...)
     return sol
 end
 
