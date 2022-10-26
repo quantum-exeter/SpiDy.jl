@@ -28,7 +28,7 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
     u0 = [s0; [0, 0, 0, 0, 0, 0]]
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
-    function f(du, u, (Cω2v, Beff), par, t)
+    function f(du, u, (Cω2v, Beff), t)
         Cω2v = get_tmp(Cω2v, u)
         Beff = get_tmp(Beff, u)
         s = @view u[1:3*N]
