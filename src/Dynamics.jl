@@ -26,9 +26,9 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
     u0 = vcat(s0, [0, 0, 0, 0, 0, 0])
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
-    Cω2v = zeros(3)
-    Beff = zeros(3)
-    function f(du, u, par, t)
+    function f(du, u, (Cω2v, Beff), par, t)
+        Cω2v = get_tmp(Cω2v, u)
+        Beff = get_tmp(Beff, u)
         s = @view u[1:3*N]
         v = @view u[1+3*N:3+3*N]
         w = @view u[4+3*N:6+3*N]
@@ -39,7 +39,7 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
         du[1+3*N:3+3*N] = w
         du[4+3*N:6+3*N] = -(J.ω0^2)*v -J.Γ*w -J.α*sum([s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
     end
-    prob = ODEProblem(f, u0, tspan)
+    prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(3))))
 
     condition(u, t, integrator) = true
     function affect!(integrator)

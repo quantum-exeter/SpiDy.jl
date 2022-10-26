@@ -1,6 +1,7 @@
 module SpiDy
 
 using DifferentialEquations
+using PreallocationTools
 using Distributions
 using FFTW
 using Interpolations
