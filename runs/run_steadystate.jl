@@ -1,4 +1,5 @@
 using SpiDy
+using DifferentialEquations
 using NPZ
 using DataFrames
 using CSV
@@ -14,35 +15,40 @@ using Plots
 Δt = 0.1
 N = 100_000
 tspan = (0., N*Δt)
-saveat = ((N*4÷5):1:N)*Δt
-
-J = LorentzianSD(10., 7., 5.); # (α, ω0, Γ)
-
-matrix = AnisoCoupling([-sin(π/4) 0. 0.
+saveat = ((N*4÷5):1:N)*Δt # save diffeqsolver solution at this points
+α = 10.
+ω0 = 7.
+Γ = 5.
+J = LorentzianSD(α, ω0, Γ) # coloring the noise
+matrix = AnisoCoupling([-sin(π/4) 0. 0. # coupling to the environment
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
-
-T = 10 .^ LinRange(-3, 3, 12)
-
-navg = 6 # number of stochastic field realizations to average
+T = 10 .^ LinRange(-3, 3, 14) # temperature scale
+navg = 6 # number of stochastic realizations
+nspin = 4 # number of spins
+s0 = zeros(3*nspin)
+for i in 1:nspin
+    ϵ = 0.1
+    s0tmp = [ϵ*rand(), ϵ*rand(), -1]
+    s0[1+(i-1)*3:3+(i-1)*3] = s0tmp./norm(s0tmp)
+end
+J0 = 1.
+JH = Nchain(nspin, J0)
 
 ########################
 ########################
 
 println("Starting...")
-
 progress = Progress(length(T));
-Sss = zeros(length(T), 3)
-
+Sss = zeros(length(T), 3*nspin)
 for n in eachindex(T)
-    noise = ClassicalNoise(T[n]);
-    s = zeros(navg, 3)
+    noise = QuantumNoise(T[n]);
+    s = zeros(navg, 3*nspin)
     Threads.@threads for i in 1:navg
-        s0 = [0., 0., -1.] # normalize(rand(3))
         bfields = [bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise)];
-        sol = diffeqsolver(s0, tspan, J, bfields, matrix; saveat=saveat);
+        sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat, alg=Rodas4());
         s[i, :] = mean(sol, dims=2)
     end
     Sss[n, :] = mean(s, dims=1)
@@ -53,8 +59,8 @@ end
 ########################
 
 ### Save data NPZ ###
-npzwrite("./steadystate.npz", Dict("T" => T,
-                                   "S" => Sss))
+npzwrite("./ss.npz", Dict("T" => T,
+                          "S" => Sss))
 
 ### Save data CSV ###
 dataframe = DataFrame(T = T,
