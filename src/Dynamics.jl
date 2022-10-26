@@ -21,7 +21,7 @@ Keyword arguments:
 julia> diffeqsolver(s0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
 ```
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[])
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], project=true)
     N = div(length(s0), 3)
     u0 = vcat(s0, [0, 0, 0, 0, 0, 0])
     Cω2 = matrix.C*transpose(matrix.C)
@@ -40,7 +40,21 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
         du[4+3*N:6+3*N] = -(J.ω0^2)*v -J.Γ*w -J.α*sum([s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
     end
     prob = ODEProblem(f, u0, tspan)
-    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat)
+
+    condition(u, t, integrator) = true
+    function affect!(integrator)
+        for n in 1:N
+            integrator.u[1+(n-1)*3:3+(n-1)*3] ./= norm(integrator.u[1+(n-1)*3:3+(n-1)*3])
+        end
+    end
+    cb = DiscreteCallback(condition, affect!, save_positions=(false,true))
+    if project
+        skwargs = (callback=cb,)
+    else
+        skwargs = NamedTuple()
+    end
+
+    sol = solve(prob, Vern7(), abstol=1e-8, reltol=1e-8, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat; skwargs...)
     return sol
 end
 
