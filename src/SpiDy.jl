@@ -1,6 +1,7 @@
 module SpiDy
 
 using DifferentialEquations
+using PreallocationTools
 using Distributions
 using FFTW
 using Interpolations
@@ -25,6 +26,6 @@ export Noise, SpectralDensity, StochasticField, CouplingTensor, CouplingFunction
 # export structures to build documentation
 export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, GenericSD, LorentzianSD, PolySD, Coupling, AnisoCoupling, IsoCoupling
 # export modules and functions to build documentation
-export spectrum, sd, sdoverω, reorgenergy, kernel, imagkernel, psd, bfield, NNChain, NNSquareLattice, diffeqsolver
+export spectrum, sd, sdoverω, reorgenergy, kernel, imagkernel, psd, bfield, Nchain, NNlattice, diffeqsolver
 
 end
