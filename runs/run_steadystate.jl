@@ -48,7 +48,7 @@ for n in eachindex(T)
         bfields = [bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise)];
-        sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat, alg=Rodas4());
+        sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat);
         s[i, :] = mean(sol, dims=2)
     end
     Sss[n, :] = mean(s, dims=1)
