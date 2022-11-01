@@ -15,7 +15,7 @@ Keyword arguments:
 - `S0` spin length set at default value 1/2, `S0=1/2`.
 - `Bext` external magnetic field set as unit-vector along the z-axis as default, `Bext = [0, 0, 1]`.
 - `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution being saved at optimal time steps within the time span.
-- `project` project the solution to force spin length conservation.
+- `projection` project the solution to force spin length conservation.
 - `alg` chooses the solving algorithm.
 - `atol` and `rtol` define the absolute and relative tolerance of the solver.
 # Examples
@@ -23,7 +23,7 @@ Keyword arguments:
 julia> diffeqsolver(s0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
 ```
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], project=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
     u0 = [s0; [0, 0, 0, 0, 0, 0]]
     Cω2 = matrix.C*transpose(matrix.C)
@@ -55,13 +55,13 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
     end
     prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(3))))
     condition(u, t, integrator) = true
-    function affect!(integrator)
+    function affect!(integrator) # projection
         for n in 1:N
             integrator.u[1+(n-1)*3:3+(n-1)*3] ./= norm(integrator.u[1+(n-1)*3:3+(n-1)*3])
         end
     end
-    cb = DiscreteCallback(condition, affect!, save_positions=(false,true))
-    skwargs = project ? (callback=cb,) : NamedTuple()
+    cb = DiscreteCallback(condition, affect!, save_positions=(false,false))
+    skwargs = projection ? (callback=cb,) : NamedTuple()
     sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat; skwargs...)
     return sol
 end

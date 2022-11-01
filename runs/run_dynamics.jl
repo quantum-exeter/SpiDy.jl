@@ -1,4 +1,5 @@
-using SpiDy
+include("../src/SpiDy.jl")
+using .SpiDy
 using NPZ
 using DataFrames
 using CSV
@@ -15,36 +16,40 @@ using Plots
 N = 10_000
 tspan = (0., N*Δt)
 saveat = (0:1:N)*Δt
-
-J = LorentzianSD(10., 7., 5.); # (α, ω0, Γ)
-
-matrix = AnisoCoupling([-sin(π/4) 0. 0.
+α = 10.
+ω0 = 7.
+Γ = 5.
+J = LorentzianSD(α, ω0, Γ) # coloring the noise
+matrix = AnisoCoupling([-sin(π/4) 0. 0. # coupling to the environment
                         0. 0. 0.
                         cos(π/4) 0. 0.]);
-
-noise = ClassicalNoise(1.);
-
-s0 = [0., 0., -1.] # normalize(rand(3))
-
-navg = 6
+T = 1.
+noise = ClassicalNoise(T);
+navg = 6 # number of stochastic realizations
+nspin = 4 # number of spins
+s0 = zeros(3*nspin)
+for i in 1:nspin
+    ϵ = 0.1
+    s0tmp = [ϵ*rand(), ϵ*rand(), -1]
+    s0[1+(i-1)*3:3+(i-1)*3] = s0tmp./norm(s0tmp)
+end
+J0 = 1.
+JH = Nchain(nspin, J0)
 
 ########################
 ########################
 
 println("Starting...")
-
 progress = Progress(navg);
-sols = zeros(navg, length(saveat), 3)
-
+sols = zeros(navg, length(saveat), 3*nspin)
 Threads.@threads for i in 1:navg
     bfields = [bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise)];
-    sol = diffeqsolver(s0, tspan, J, bfields, matrix; saveat=saveat);
+    sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat);
     sols[i, :, :] = transpose(sol[:, :])
     next!(progress)
 end
-
 solavg = mean(sols, dims=1)[1, :, :];
 
 ########################
