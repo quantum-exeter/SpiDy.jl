@@ -36,10 +36,22 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
         w = @view u[4+3*N:6+3*N]
         Beff .= Bext + bn(t) + mul!(Cω2v, Cω2, v)
         for i in 1:N
-            du[1+(i-1)*3:3+(i-1)*3] = -cross(s[1+(i-1)*3:3+(i-1)*3], Beff + sum([JH[i,j] * s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N]))
+            du[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[3]-s[3+(i-1)*3]*Beff[2])
+            du[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[1]-s[1+(i-1)*3]*Beff[3])
+            du[3+(i-1)*3] = -(s[1+(i-1)*3]*Beff[2]-s[2+(i-1)*3]*Beff[1])
+            for j in 1:N
+                du[1+(i-1)*3] += -(s[2+(i-1)*3]*JH[i,j]*s[3+(j-1)*3]-s[3+(i-1)*3]*JH[i,j]*s[2+(j-1)*3])
+                du[2+(i-1)*3] += -(s[3+(i-1)*3]*JH[i,j]*s[1+(j-1)*3]-s[1+(i-1)*3]*JH[i,j]*s[3+(j-1)*3])
+                du[3+(i-1)*3] += -(s[1+(i-1)*3]*JH[i,j]*s[2+(j-1)*3]-s[2+(i-1)*3]*JH[i,j]*s[1+(j-1)*3])
+            end
         end
         du[1+3*N:3+3*N] = w
-        du[4+3*N:6+3*N] = -(J.ω0^2)*v -J.Γ*w -J.α*sum([s[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
+        du[4+3*N:6+3*N] = -(J.ω0^2)*v -J.Γ*w
+        for i in 1:N
+            du[4+3*N] += -J.α*s[(1+(i-1)*3)]
+            du[5+3*N] += -J.α*s[(2+(i-1)*3)]
+            du[6+3*N] += -J.α*s[(3+(i-1)*3)]
+        end
     end
     prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(3))))
     condition(u, t, integrator) = true
