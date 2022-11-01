@@ -1,5 +1,4 @@
-include("../src/SpiDy.jl")
-using .SpiDy
+using SpiDy
 using NPZ
 using DataFrames
 using CSV
