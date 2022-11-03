@@ -59,6 +59,7 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
         for n in 1:N
             integrator.u[1+(n-1)*3:3+(n-1)*3] ./= norm(integrator.u[1+(n-1)*3:3+(n-1)*3])
         end
+        u_modified!(integrator, false)
     end
     cb = DiscreteCallback(condition, affect!, save_positions=(false,false))
     skwargs = projection ? (callback=cb,) : NamedTuple()
