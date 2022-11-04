@@ -10,7 +10,7 @@ Keyword arguments:
 ```
 """
 function Nchain(N, J0; boundary=nothing)
-    J = SymTridiagonal(repeat([0.], N), repeat([J0], N-1))
+    J = Array(SymTridiagonal(repeat([0.], N), repeat([J0], N-1)))
     if boundary == :periodic
         J[1,N] = J[N,1] = J0
     end
