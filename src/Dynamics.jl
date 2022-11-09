@@ -23,18 +23,26 @@ Keyword arguments:
 julia> diffeqsolver(s0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
 ```
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
-    u0 = [s0; [0, 0, 0, 0, 0, 0]]
+    u0 = [s0; zeros(6*N+6)]
     Cω2 = matrix.C*transpose(matrix.C)
-    bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
+    b = []
+    for i in 1:N
+        push!(b, t -> matrix.C*[bfields[i][1](t), bfields[i][2](t), bfields[i][3](t)]);
+    end
+    bshared = t -> matrix.C*[bfieldshared[1](t), bfieldshared[2](t), bfieldshared[3](t)];
     function f(du, u, (Cω2v, Beff), t)
         Cω2v = get_tmp(Cω2v, u)
         Beff = get_tmp(Beff, u)
         s = @view u[1:3*N]
-        v = @view u[1+3*N:3+3*N]
-        w = @view u[4+3*N:6+3*N]
-        Beff .= Bext + bn(t) + mul!(Cω2v, Cω2, v)
+        v = @view u[1+3*N:6*N]
+        w = @view u[1+6*N:9*N]
+        vshared = @view u[1+9*N:3+9*N]
+        wshared = @view u[4+9*N:6+9*N]
+        for i in 1:N
+            Beff[i, :] .= Bext + bshared(t) + b[i](t) + mul!(Cω2v, Cω2, vshared + v[1+(i-1)*3:3+(i-1)*3])
+        end
         for i in 1:N
             du[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[3]-s[3+(i-1)*3]*Beff[2])
             du[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[1]-s[1+(i-1)*3]*Beff[3])
@@ -45,15 +53,17 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
                 du[3+(i-1)*3] += -(s[1+(i-1)*3]*JH[i,j]*s[2+(j-1)*3]-s[2+(i-1)*3]*JH[i,j]*s[1+(j-1)*3])
             end
         end
-        du[1+3*N:3+3*N] = w
-        du[4+3*N:6+3*N] = -(J.ω0^2)*v -J.Γ*w
+        du[1+3*N:6*N] = w
+        du[1+6*N:9*N] = -(J.ω0^2)*v -J.Γ*w -J.α*s
+        du[1+9*N:3+9*N] = wshared
+        du[4+9*N:6+9*N] = -(Jshared.ω0^2)*vshared -Jshared.Γ*wshared
         for i in 1:N
-            du[4+3*N] += -J.α*s[(1+(i-1)*3)]
-            du[5+3*N] += -J.α*s[(2+(i-1)*3)]
-            du[6+3*N] += -J.α*s[(3+(i-1)*3)]
+            du[4+9*N] += -Jshared.α*s[(1+(i-1)*3)]
+            du[5+9*N] += -Jshared.α*s[(2+(i-1)*3)]
+            du[6+9*N] += -Jshared.α*s[(3+(i-1)*3)]
         end
     end
-    prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(3))))
+    prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N,3))))
     condition(u, t, integrator) = true
     function affect!(integrator) # projection
         for n in 1:N
