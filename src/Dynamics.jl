@@ -44,9 +44,9 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields
             Beff[i, :] .= Bext + bshared(t) + b[i](t) + mul!(Cω2v, Cω2, vshared + v[1+(i-1)*3:3+(i-1)*3])
         end
         for i in 1:N
-            du[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[3]-s[3+(i-1)*3]*Beff[2])
-            du[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[1]-s[1+(i-1)*3]*Beff[3])
-            du[3+(i-1)*3] = -(s[1+(i-1)*3]*Beff[2]-s[2+(i-1)*3]*Beff[1])
+            du[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[i,3]-s[3+(i-1)*3]*Beff[i,2])
+            du[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[i,1]-s[1+(i-1)*3]*Beff[i,3])
+            du[3+(i-1)*3] = -(s[1+(i-1)*3]*Beff[i,2]-s[2+(i-1)*3]*Beff[i,1])
             for j in 1:N
                 du[1+(i-1)*3] += -(s[2+(i-1)*3]*JH[i,j]*s[3+(j-1)*3]-s[3+(i-1)*3]*JH[i,j]*s[2+(j-1)*3])
                 du[2+(i-1)*3] += -(s[3+(i-1)*3]*JH[i,j]*s[1+(j-1)*3]-s[1+(i-1)*3]*JH[i,j]*s[3+(j-1)*3])
