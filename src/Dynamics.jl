@@ -77,6 +77,22 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields
     return sol
 end
 
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+    N = div(length(s0), 3)
+    if length(bfields) == N && length(bfields[1]) == 3 # only local baths
+        Jshared = LorentzianSD(0, 0, 0)
+        bfieldshared = [t -> 0, t -> 0, t -> 0]
+        return diffeqsolver(s0, tspan, J, Jshared, bfields, bfieldshared, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
+    else # only shared bath
+        Jlocal = LorentzianSD(0, 0, 0)
+        bfieldslocal = []
+        for _ in 1:N
+            push!(bfieldslocal, [t -> 0, t -> 0, t -> 0])
+        end
+        return diffeqsolver(s0, tspan, Jlocal, J, bfieldslocal, bfields, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
+    end
+end
+
 """
 ```Julia
 diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
