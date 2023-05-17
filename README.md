@@ -50,7 +50,7 @@ where you want to replace "6" with the number of threads that you wish to use. A
 * **docs**: contains the logos, make.jl and index.md for the generation of documentation
 * **runs**: contains run_*.jl files which can be used as a template to run the code
 * **src**: contains the source code
-* **starthere**: contains an ipynb notebook written in Julia which walks you through bits and pieces of the code with explainatory plots *(the notebook is ready to use but in continuous development)*
+* **starthere**: contains an ipynb notebook written in Julia which walks you through bits and pieces of the code with explanatory plots *(the notebook is evolving over time but always ready to use)*
 
 ## Online documentation
 Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/">this link</a>.
