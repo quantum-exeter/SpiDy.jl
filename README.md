@@ -1,3 +1,5 @@
+![spidy_banner](https://github.com/quantum-exeter/SpiDy.jl/blob/main/docs/src/assets/banner.png)
+
 # SpiDy.jl
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://quantum-exeter.github.io/SpiDy.jl/dev)
