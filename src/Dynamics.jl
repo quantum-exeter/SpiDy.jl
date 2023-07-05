@@ -1,7 +1,5 @@
 """
-```Julia
-diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], project=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
-```
+    diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], project=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
 Returns `[sol.t, s, sinterp]`, that is,
 - the vector `sol.t` of time steps at which the solutions are evaluated,
@@ -94,9 +92,7 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
 end
 
 """
-```Julia
-diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
-```
+    diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
 Returns `[sol.t, x, p, xinterp, pinterp]`, that is,
 - the vector `sol.t` of time steps at which the solutions are evaluated,

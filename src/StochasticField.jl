@@ -1,14 +1,25 @@
 """
-```Julia
-bfield(N, Δt, J::GenericSD, noise::Noise, distro=nothing)
-```
+    bfield(N, Δt, J::GenericSD, noise::Noise; distro=Normal(0., 1/sqrt(Δt)), interpolation=true)
 
-Returns the stochastic field `b(t)`. It is evaluated using the Lorentzian spectral
-density defined by the parameters `J`, the classical/quantum/quantum-no-zero-energy noise.
-The sampling of the stochastic noise is done in frequency space. The default stochastic noise
-is white noise having Gaussian distribution but different distributions can be specified.
-`N` defines the number of steps and `Δt` defines the time step.
+Generate a stochastic field realisation time series (of length `N` and spacing `Δt`)
+based on the given noise model `noise` and spectral density `J`.
+
+# Arguments
+- `N`: The number of time steps.
+- `Δt`: The time step size.
+- `J::GenericSD`: The environment spectral density.
+- `noise::Noise`: The noise model for the environment.
+- `distro=Normal(0., 1/sqrt(Δt))`: (Optional) The distribution of noise samples. Default is a normal distribution with mean 0 and standard deviation `1/sqrt(Δt)`.
+- `interpolation=true`: (Optional) Specifies whether to use linear interpolation for the stochastic field time series. Default is `true`.
+
+# Returns
+A time series of the stochastic field values.
 """
+# Returns the stochastic field `b(t)`. It is evaluated using the Lorentzian spectral
+# density defined by the parameters `J`, the classical/quantum/quantum-no-zero-energy noise.
+# The sampling of the stochastic noise is done in frequency space. The default stochastic noise
+# is white noise having Gaussian distribution but different distributions can be specified.
+# `N` defines the number of steps and `Δt` defines the time step.
 function bfield(N, Δt, J::GenericSD, noise::Noise; distro=Normal(0., 1/sqrt(Δt)), interpolation=true)
     distrosample = rand(distro, N)
     distrosamplefft = rfft(distrosample)

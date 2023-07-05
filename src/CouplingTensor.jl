@@ -1,20 +1,43 @@
 """
-```Julia
-Coupling
-```
+    abstract type Coupling
 
-Definition of the abstract type `Coupling`.
+Abstract type used to represent different forms of the environment coupling tensor.
 """
 abstract type Coupling end
 
 """
-```Julia
-AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}}
-```
+    struct AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}} <: Coupling
 
-Returns a `AnisoCoupling` structure of type `Coupling` built by passing it a 3x3 `Matrix{Real}` which defines
-the n-dimentional coupling between the spin and the stochastic fields. The matrix can therefore
-define a 1D, 2D as well as a 3D coupling. 
+A subtype of `Coupling` used to represent generic anisotropic coupling between the spin and environment.
+
+# Fields
+- `C::TT`: The coupling matrix, which must be a 3x3 matrix (of type `Matrix{<:Real}`).
+
+# Examples
+For a system with environment coupling where the `y` coupling is twice as large as the `x`,
+and the `z` three times as large, one can do:
+```julia
+julia> C = [1.0 0.0 0.0; 0.0 2.0 0.0; 0.0 0.0 3.0]
+3×3 Matrix{Float64}:
+ 1.0  0.0  0.0
+ 0.0  2.0  0.0
+ 0.0  0.0  3.0
+
+julia> coupling = AnisoCoupling(C)
+AnisoCoupling{Matrix{Float64}}([1.0 0.0 0.0; 0.0 2.0 0.0; 0.0 0.0 3.0])
+
+One can define effective 2D couplings by setting all coefficients in one of the dimensions to zero:
+```julia
+julia> C = [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 0.0]
+3x3 Matrix{Float64}
+ 1.0 0.0 0.0
+ 0.0 1.0 0.0
+ 0.0 0.0 0.0
+
+julia> coupling_2d = AnisoCoupling(C)
+AnisoCoupling{Matrix{Float64}}([1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 0.0])
+```
+Similarly, one can define effective 1D couplings by setting two of the components to zero.
 """
 struct AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}} <: Coupling
     C::TT
@@ -25,12 +48,18 @@ Base.getindex(coupling::AnisoCoupling{TT}, i::Int) where {TT<:AbstractMatrix{T} 
 Base.getindex(coupling::AnisoCoupling{TT}, I::Vararg{Int,N}) where {TT<:AbstractMatrix{T} where {T<:Real},N} = coupling.C[I...]
 
 """
-```Julia
-IsoCoupling{TT<:Real}
-```
+    struct IsoCoupling{TT<:Real} <: Coupling
 
-Returns a IsoCoupling of type `Coupling` built by passing it a single `Real` value which defines
-the n-dimentional isotropic coupling between the spin and the stochastic fields.
+A subtype of `Coupling` used to represent isotropic coupling between spin and environment.
+
+# Fields
+- `C::Real`: The coupling strength.
+
+# Examples
+```julia
+julia> coupling = IsoCoupling(2.5)
+IsoCoupling{Float64}(2.5)
+```
 """
 struct IsoCoupling{TT<:Real} <: Coupling
     C::TT

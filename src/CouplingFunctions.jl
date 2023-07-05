@@ -1,12 +1,32 @@
 """
-```Julia
-Nchain(N, J0; boundary=nothing)
+    Nchain(N, J0; boundary=nothing)
+
+Create the spin-spin coupling matrix of a 1D chain of `N` sites with nearest-neighbour interactions of strength set by `J0`.
+
+# Arguments
+- `N`: The number of sites in the chain.
+- `J0`: The nearest-neighbour coupling strength.
+- `boundary=nothing`: (Optional) Specifies the boundary condition of the chain. Default is `nothing` which corresponds to a chain open at the edges. Use `:periodic` for periodic boundary conditions.
+
+# Returns
+An `N×N` array representing the coupling matrix.
+
+# Examples
+```julia
+julia> J = Nchain(4, 2.0)
+4×4 Matrix{Float64}:
+ 0.0  2.0  0.0  0.0
+ 2.0  0.0  2.0  0.0
+ 0.0  2.0  0.0  2.0
+ 0.0  0.0  2.0  0.0
+
+julia> J_periodic = Nchain(4, 2.0; boundary=:periodic)
+4×4 Matrix{Float64}:
+ 0.0  2.0  0.0  2.0
+ 2.0  0.0  2.0  0.0
+ 0.0  2.0  0.0  2.0
+ 2.0  0.0  2.0  0.0
 ```
-
-Returns the coupling matrix for a 1D chain of `N` sites with nearest-neighbours interactions of strength set by `J0`.
-
-Keyword arguments:
-- `boundary` if set to `:periodic` then periodic boundary conditions are considered, otherwise the chain is open at the edges
 """
 function Nchain(N, J0; boundary=nothing)
     J = Array(SymTridiagonal(repeat([0.], N), repeat([J0], N-1)))
@@ -22,14 +42,46 @@ function map_1d_to_2d_idx(n, N)
 end
 
 """
-```Julia
-NNlattice(N, Jh, Jv; boundary=nothing)
+    NNlattice(N, Jh, Jv; boundary=nothing)
+
+Create the spin-spin coupling matrix of a `NxN` 2D lattice with nearest-neighbour interactions and
+specified horizontal and vertical coupling strengths, `Jh` and `Jv` respectively.
+
+# Arguments
+- `N`: The size of the lattice (N x N).
+- `Jh`: The horizontal nearest-neighbour coupling strength.
+- `Jv`: The vertical nearest-neighbour coupling strength.
+- `boundary=nothing`: (Optional) Specifies the boundary condition of the lattice. Default is `nothing` which corresponds to open edges. Use `:periodic` for periodic boundary condition.
+
+# Returns
+An `N^2×N^2` array representing the coupling matrix of the lattice.
+
+# Examples
+```julia
+julia> J = NNlattice(3, 2.0, 1.0)
+9×9 LinearAlgebra.Symmetric{Float64, Matrix{Float64}}:
+ 0.0  2.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0
+ 2.0  0.0  2.0  0.0  1.0  0.0  0.0  0.0  0.0
+ 0.0  2.0  0.0  0.0  0.0  1.0  0.0  0.0  0.0
+ 1.0  0.0  0.0  0.0  2.0  0.0  1.0  0.0  0.0
+ 0.0  1.0  0.0  2.0  0.0  2.0  0.0  1.0  0.0
+ 0.0  0.0  1.0  0.0  2.0  0.0  0.0  0.0  1.0
+ 0.0  0.0  0.0  1.0  0.0  0.0  0.0  2.0  0.0
+ 0.0  0.0  0.0  0.0  1.0  0.0  2.0  0.0  2.0
+ 0.0  0.0  0.0  0.0  0.0  1.0  0.0  2.0  0.0
+
+julia> J_periodic = NNlattice(2, 2.0, 1.0; boundary=:periodic)
+9×9 LinearAlgebra.Symmetric{Float64, Matrix{Float64}}:
+ 0.0  2.0  2.0  1.0  0.0  0.0  1.0  0.0  0.0
+ 2.0  0.0  2.0  0.0  1.0  0.0  0.0  1.0  0.0
+ 2.0  2.0  0.0  0.0  0.0  1.0  0.0  0.0  1.0
+ 1.0  0.0  0.0  0.0  2.0  2.0  1.0  0.0  0.0
+ 0.0  1.0  0.0  2.0  0.0  2.0  0.0  1.0  0.0
+ 0.0  0.0  1.0  2.0  2.0  0.0  0.0  0.0  1.0
+ 1.0  0.0  0.0  1.0  0.0  0.0  0.0  2.0  2.0
+ 0.0  1.0  0.0  0.0  1.0  0.0  2.0  0.0  2.0
+ 0.0  0.0  1.0  0.0  0.0  1.0  2.0  2.0  0.0
 ```
-
-Returns the coupling matrix for a 2D square lattice of `N`x`N` sites with nearest-neighbours interactions of strength `Jh` in the horizontal direction and `Jv` in the vertical one.
-
-Keyword arguments:
-- `boundary` if set to `:periodic` then periodic boundary conditions are considered, otherwise the lattice is open at the edges
 """
 function NNlattice(N, Jh, Jv; boundary=nothing)
     J = zeros(N^2, N^2)
