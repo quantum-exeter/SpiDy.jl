@@ -7,7 +7,6 @@ Returns the coupling matrix for a 1D chain of `N` sites with nearest-neighbours 
 
 Keyword arguments:
 - `boundary` if set to `:periodic` then periodic boundary conditions are considered, otherwise the chain is open at the edges
-```
 """
 function Nchain(N, J0; boundary=nothing)
     J = Array(SymTridiagonal(repeat([0.], N), repeat([J0], N-1)))
@@ -31,7 +30,6 @@ Returns the coupling matrix for a 2D square lattice of `N`x`N` sites with neares
 
 Keyword arguments:
 - `boundary` if set to `:periodic` then periodic boundary conditions are considered, otherwise the lattice is open at the edges
-```
 """
 function NNlattice(N, Jh, Jv; boundary=nothing)
     J = zeros(N^2, N^2)
