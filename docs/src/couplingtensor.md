@@ -1,4 +1,4 @@
-## Coupling tensor
+## Environment coupling tensor
 ```@docs
 Coupling
 AnisoCoupling{TT<:AbstractMatrix{T} where {T<:Real}}
