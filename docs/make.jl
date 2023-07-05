@@ -4,7 +4,7 @@ using Documenter, SpiDy
 
 makedocs(;
     modules=[SpiDy],
-    authors=["Stefano Scali <scali.stefano@gmail.com>", "Federico Cerisola <federico@cerisola.net>"],
+    authors="Stefano Scali <scali.stefano@gmail.com>, Federico Cerisola <federico@cerisola.net>",
     repo="https://github.com/quantum-exeter/SpiDy.jl/blob/{commit}{path}#{line}",
     sitename="SpiDy.jl",
     format=Documenter.HTML(;
