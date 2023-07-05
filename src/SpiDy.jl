@@ -6,9 +6,6 @@ using Distributions
 using FFTW
 using Interpolations
 using LinearAlgebra
-using NPZ
-using DataFrames
-using CSV
 using ProgressMeter
 using Random
 using Statistics
