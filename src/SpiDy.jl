@@ -6,7 +6,6 @@ using Distributions
 using FFTW
 using Interpolations
 using LinearAlgebra
-using ProgressMeter
 using Random
 using Statistics
 
