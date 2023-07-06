@@ -11,6 +11,4 @@ reorgenergy(J::GenericSD)
 reorgenergy(J::LorentzianSD)
 kernel(J::LorentzianSD)
 imagkernel(J::GenericSD)
-psd(J::GenericSD, noise::Noise)
-psd(J::LorentzianSD, noise::ClassicalNoise)
 ```

@@ -17,8 +17,8 @@ makedocs(;
              "Noise" => "noise.md",
              "Spectral density" => "spectraldensity.md",
              "Stochastic field" => "stochasticfield.md",
-             "Coupling tensor" => "couplingtensor.md",
-             "Coupling functions" => "couplingfunctions.md",
+             "Spin-environment coupling tensor" => "couplingtensor.md",
+             "Spin-spin interactions" => "couplingfunctions.md",
              "Dynamics" => "dynamics.md"],
 )
 

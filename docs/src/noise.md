@@ -5,4 +5,5 @@ ClassicalNoise
 QuantumNoise
 NoZeroQuantumNoise
 spectrum
+psd
 ```

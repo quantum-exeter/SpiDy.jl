@@ -4,8 +4,9 @@ pages = ["Start with SpiDy.jl" => "index.md",
          "Noise" => "noise.md",
          "Spectral density" => "spectraldensity.md",
          "Stochastic field" => "stochasticfield.md",
-         "Coupling tensor" => "couplingtensor.md",
-         "Dynamics" => "dynamics.md"])
+         "Spin-environment coupling tensor" => "couplingtensor.md",
+         "Spin-spin interactions" => "couplingfunctions.md",
+         "Dynamics" => "dynamics.md]
 ```
 
 ## Start with SpiDy.jl
