@@ -25,7 +25,7 @@ julia> C = [1.0 0.0 0.0; 0.0 2.0 0.0; 0.0 0.0 3.0]
 
 julia> coupling = AnisoCoupling(C)
 AnisoCoupling{Matrix{Float64}}([1.0 0.0 0.0; 0.0 2.0 0.0; 0.0 0.0 3.0])
-
+```
 One can define effective 2D couplings by setting all coefficients in one of the dimensions to zero:
 ```julia
 julia> C = [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 0.0]
