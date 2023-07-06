@@ -1,45 +1,28 @@
 """
-diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+    function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
-Solves a system of coupled ordinary differential equations (ODEs) using numerical integration. This function supports **multiple baths in input**, local and shared.
+Solves the dynamics of a system of ineracting spins under the influence of *both* local (unique to each spin)
+and global (shared by all spins) stochastic noise from the environment.
 
-Parameters:
-- s0 : Array
-    Initial conditions for the ODEs.
-- tspan : Tuple or AbstractVector
-    Time span for integration, given as a tuple (tstart, tend) or an array of time points.
-- J : LorentzianSD
-    Physical parameters for the J-coupling interaction.
-- Jshared : LorentzianSD
-    Physical parameters for the shared J-coupling interaction.
-- bfields : Array{Tuple{Function, Function, Function}}
-    Local stochastic field components as functions of time.
-- bfieldshared : Tuple{Function, Function, Function}
-    Shared stochastic field components as functions of time.
-- matrix : Coupling
-    Coupling matrix between spins.
+# Arguments
+- `s0`: Array of length `3N` specifying the initial conditions of the `N` spins. The order the initial consitions is first the `Sx,Sy,Sz` for the first spin, then for the second, and so on.
+- `tspan`: The time span to solve the equations over, specified as a tuple `(tstart, tend)`.
+- `J::LorentzianSD`: The spectral density of the noise acting locally (i.e. independently) on each spin.
+- `Jshared::LorentzianSD`: The spectral density of the noise acting globally on all spins.
+- `bfields`: An array of tuples of functions `Array{Tuple{Function, Function, Function}}` representing the time series of the local stochastic field for each spin.
+- `bfieldshared`: A tuple of functions `Tuple{Function, Function, Function}` representing the time series of the global stochastic field shared by all the spins.
+- `matrix::Coupling`: The spin-environment coupling matrix.
+- `JH=zero(I)`: (Optional) The spin-spin coupling matrix. Default is zero matrix (i.e. non-interacting spins).
+- `S0=1/2`: (Optional) The spin quantum number. Default is 1/2.
+- `Bext=[0, 0, 1]`: (Optional) The external magnetic field vector. Default is `[0, 0, 1]` (normalised length pointing in the `z` direction).
+- `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
+- `projection=true`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `true`.
+- `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
+- `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
+- `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
 
-Keyword Arguments:
-- JH : Matrix, optional (default: zero(I))
-    Matrix representing the J-coupling interaction strengths.
-- S0 : Number, optional (default: 1/2)
-    Spin quantum number.
-- Bext : Array{Number}, optional (default: [0, 0, 1])
-    External magnetic field components.
-- saveat : AbstractVector, optional (default: [])
-    Time points to save the solution.
-- projection : Bool, optional (default: true)
-    Flag indicating whether to perform projection on the solution.
-- alg : Algorithm, optional (default: Tsit5())
-    Integration algorithm to use.
-- atol : Number, optional (default: 1e-3)
-    Absolute tolerance for the integration.
-- rtol : Number, optional (default: 1e-3)
-    Relative tolerance for the integration.
-
-Returns:
-- sol : ODESolution
-    Solution to the system of ODEs.
+# Returns
+An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
 function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
@@ -96,55 +79,28 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields
 end
 
 """
-diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+    function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
-Solves a system of coupled ordinary differential equations (ODEs) using numerical integration. This function supports **a single bath input**, either local or shared.
+Solves the dynamics of a system of ineracting spins under the influence of *either* local (unique to each spin)
+or global (shared by all spins) stochastic noise from the environment.
 
-For local baths:
-- s0 : Array
-    Initial conditions for the ODEs.
-- tspan : Tuple or AbstractVector
-    Time span for integration, given as a tuple (tstart, tend) or an array of time points.
-- J : LorentzianSD
-    Physical parameters for the J-coupling interaction.
-- bfields : Array{Tuple{Function, Function, Function}}
-    Local stochastic field components as functions of time.
-- matrix : Coupling
-    Coupling matrix between spins.
+# Arguments
+- `s0`: Array of length `3N` specifying the initial conditions of the `N` spins. The order the initial consitions is first the `Sx,Sy,Sz` for the first spin, then for the second, and so on.
+- `tspan`: The time span to solve the equations over, specified as a tuple `(tstart, tend)`.
+- `J::LorentzianSD`: The spectral density of the noise acting on the spins (either local or shared depending on the value of `bfields`).
+- `bfields`: For *local* baths, an array of tuples of functions `Array{Tuple{Function, Function, Function}}` representing the time series of the local stochastic field for each spin. For a *global* bath, a tuple of functions `Tuple{Function, Function, Function}` representing the time series of the global stochastic field shared by all the spins.
+- `matrix::Coupling`: The spin-environment coupling matrix.
+- `JH=zero(I)`: (Optional) The spin-spin coupling matrix. Default is zero matrix (i.e. non-interacting spins).
+- `S0=1/2`: (Optional) The spin quantum number. Default is 1/2.
+- `Bext=[0, 0, 1]`: (Optional) The external magnetic field vector. Default is `[0, 0, 1]` (normalised length pointing in the `z` direction).
+- `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
+- `projection=true`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `true`.
+- `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
+- `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
+- `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
 
-For shared bath:
-- s0 : Array
-    Initial conditions for the ODEs.
-- tspan : Tuple or AbstractVector
-    Time span for integration, given as a tuple (tstart, tend) or an array of time points.
-- J : LorentzianSD
-    Physical parameters for the J-coupling interaction.
-- bfields : Tuple{Function, Function, Function}
-    Shared stochastic field components as functions of time.
-- matrix : Coupling
-    Coupling matrix between spins.
-
-Keyword Arguments:
-- JH : Matrix, optional (default: zero(I))
-    Matrix representing the J-coupling interaction strengths.
-- S0 : Number, optional (default: 1/2)
-    Spin quantum number.
-- Bext : Array{Number}, optional (default: [0, 0, 1])
-    External magnetic field components.
-- saveat : AbstractVector, optional (default: [])
-    Time points to save the solution.
-- projection : Bool, optional (default: true)
-    Flag indicating whether to perform projection on the solution.
-- alg : Algorithm, optional (default: Tsit5())
-    Integration algorithm to use.
-- atol : Number, optional (default: 1e-3)
-    Absolute tolerance for the integration.
-- rtol : Number, optional (default: 1e-3)
-    Relative tolerance for the integration.
-
-Returns:
-- sol : ODESolution
-    Solution to the system of ODEs.
+# Returns
+An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
 function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
@@ -163,41 +119,28 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
 end
 
 """
-diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
+    function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
-Solves a system of coupled ordinary differential equations (ODEs) using numerical integration.
+Solves the dynamics of a system of ineracting spins under the influence of *either* local (unique to each spin)
+or global (shared by all spins) stochastic noise from the environment.
 
-Parameters:
-- x0 : Array
-    Initial positions for the ODEs.
-- p0 : Array
-    Initial momenta for the ODEs.
-- tspan : Tuple or AbstractVector
-    Time span for integration, given as a tuple (tstart, tend) or an array of time points.
-- J : LorentzianSD
-    Physical parameters for the J-coupling interaction.
-- bfields : Tuple{Function, Function, Function}
-    Magnetic field components as functions of time.
-- matrix : Coupling
-    Coupling matrix.
+# Arguments
+- `x0`: Array of length `N` specifying the initial position of the `N` oscillators.
+- `p0`: Array of length `N` specifying the initial momentum of the `N` oscillators.
+- `tspan`: The time span to solve the equations over, specified as a tuple `(tstart, tend)`.
+- `J::LorentzianSD`: The spectral density of the noise acting globally on the harmonic oscillators.
+- `bfields`: A tuple of functions `Tuple{Function, Function, Function}` representing the time series of the global stochastic field shared by all the harmonic oscillators.
+- `matrix::Coupling`: The harmonic oscillators-environment coupling matrix.
+- `JH=zero(I)`: (Optional) The oscillator-oscillator coupling matrix. Default is zero matrix (i.e. non-interacting oscillators).
+- `Ω=1`: (Optional) The natural angular frequency of the harmonic oscillators (currently the same for all). Default is 1.
+- `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
+- `projection=true`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `true`.
+- `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
+- `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
+- `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
 
-Keyword Arguments:
-- JH : Matrix, optional (default: zero(I))
-    Matrix representing the J-coupling interaction strengths.
-- Ω : Number, optional (default: 1.0)
-    Angular frequency.
-- saveat : AbstractVector, optional (default: [])
-    Time points to save the solution.
-- alg : Algorithm, optional (default: Tsit5())
-    Integration algorithm to use.
-- atol : Number, optional (default: 1e-3)
-    Absolute tolerance for the integration.
-- rtol : Number, optional (default: 1e-3)
-    Relative tolerance for the integration.
-
-Returns:
-- sol : ODESolution
-    Solution to the system of ODEs.
+# Returns
+An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
 function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(x0), 3)
