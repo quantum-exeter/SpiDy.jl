@@ -1,27 +1,45 @@
 """
-```Julia
-diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], project=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
-```
+diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
-Returns `[sol.t, s, sinterp]`, that is,
-- the vector `sol.t` of time steps at which the solutions are evaluated,
-- the 3-vector solution `s[:, 1+(i-1)*3]`, `s[:, 2+(i-1)*3]`, `s[:, 3+(i-1)*3]` relative to the spin `i` is evaluated at times `sol.t`,
-- the 3 functions `sinterp(t)[1+(i-1)*3]`, `sinterp(t)[2+(i-1)*3]`, `sinterp(t)[3+(i-1)*3]` are the interpolations of the relative solutions `s` found in the given time span.
+Solves a system of coupled ordinary differential equations (ODEs) using numerical integration. This function supports **multiple baths in input**, local and shared.
 
-The differential equation solver is built to account for Lorentzian spectral density.
+Parameters:
+- s0 : Array
+    Initial conditions for the ODEs.
+- tspan : Tuple or AbstractVector
+    Time span for integration, given as a tuple (tstart, tend) or an array of time points.
+- J : LorentzianSD
+    Physical parameters for the J-coupling interaction.
+- Jshared : LorentzianSD
+    Physical parameters for the shared J-coupling interaction.
+- bfields : Array{Tuple{Function, Function, Function}}
+    Local stochastic field components as functions of time.
+- bfieldshared : Tuple{Function, Function, Function}
+    Shared stochastic field components as functions of time.
+- matrix : Coupling
+    Coupling matrix between spins.
 
-Keyword arguments:
-- `JH` is the Heisenberg coupling matrix. Note that this have to be a symmetric matrix with zero diagonal. The preset value is the additive identity of the UniformScaling type, `JH=zero(I)`.
-- `S0` spin length set at default value 1/2, `S0=1/2`.
-- `Bext` external magnetic field set as unit-vector along the z-axis as default, `Bext = [0, 0, 1]`.
-- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution being saved at optimal time steps within the time span.
-- `projection` project the solution to force spin length conservation.
-- `alg` chooses the solving algorithm.
-- `atol` and `rtol` define the absolute and relative tolerance of the solver.
-# Examples
-```julia-repl
-julia> diffeqsolver(s0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
-```
+Keyword Arguments:
+- JH : Matrix, optional (default: zero(I))
+    Matrix representing the J-coupling interaction strengths.
+- S0 : Number, optional (default: 1/2)
+    Spin quantum number.
+- Bext : Array{Number}, optional (default: [0, 0, 1])
+    External magnetic field components.
+- saveat : AbstractVector, optional (default: [])
+    Time points to save the solution.
+- projection : Bool, optional (default: true)
+    Flag indicating whether to perform projection on the solution.
+- alg : Algorithm, optional (default: Tsit5())
+    Integration algorithm to use.
+- atol : Number, optional (default: 1e-3)
+    Absolute tolerance for the integration.
+- rtol : Number, optional (default: 1e-3)
+    Relative tolerance for the integration.
+
+Returns:
+- sol : ODESolution
+    Solution to the system of ODEs.
 """
 function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
@@ -77,6 +95,57 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields
     return sol
 end
 
+"""
+diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+
+Solves a system of coupled ordinary differential equations (ODEs) using numerical integration. This function supports **a single bath input**, either local or shared.
+
+For local baths:
+- s0 : Array
+    Initial conditions for the ODEs.
+- tspan : Tuple or AbstractVector
+    Time span for integration, given as a tuple (tstart, tend) or an array of time points.
+- J : LorentzianSD
+    Physical parameters for the J-coupling interaction.
+- bfields : Array{Tuple{Function, Function, Function}}
+    Local stochastic field components as functions of time.
+- matrix : Coupling
+    Coupling matrix between spins.
+
+For shared bath:
+- s0 : Array
+    Initial conditions for the ODEs.
+- tspan : Tuple or AbstractVector
+    Time span for integration, given as a tuple (tstart, tend) or an array of time points.
+- J : LorentzianSD
+    Physical parameters for the J-coupling interaction.
+- bfields : Tuple{Function, Function, Function}
+    Shared stochastic field components as functions of time.
+- matrix : Coupling
+    Coupling matrix between spins.
+
+Keyword Arguments:
+- JH : Matrix, optional (default: zero(I))
+    Matrix representing the J-coupling interaction strengths.
+- S0 : Number, optional (default: 1/2)
+    Spin quantum number.
+- Bext : Array{Number}, optional (default: [0, 0, 1])
+    External magnetic field components.
+- saveat : AbstractVector, optional (default: [])
+    Time points to save the solution.
+- projection : Bool, optional (default: true)
+    Flag indicating whether to perform projection on the solution.
+- alg : Algorithm, optional (default: Tsit5())
+    Integration algorithm to use.
+- atol : Number, optional (default: 1e-3)
+    Absolute tolerance for the integration.
+- rtol : Number, optional (default: 1e-3)
+    Relative tolerance for the integration.
+
+Returns:
+- sol : ODESolution
+    Solution to the system of ODEs.
+"""
 function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
     if length(bfields) == N && length(bfields[1]) == 3 # only local baths
@@ -94,28 +163,41 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=
 end
 
 """
-```Julia
 diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
-```
 
-Returns `[sol.t, x, p, xinterp, pinterp]`, that is,
-- the vector `sol.t` of time steps at which the solutions are evaluated,
-- the vectors of the solutions positions `x` and momenta `p` evaluated at times `sol.t`,
-- the functions xinterp(t), pinterp(t) interpolations of the solutions found in the given time span.
+Solves a system of coupled ordinary differential equations (ODEs) using numerical integration.
 
-The differential equation solver is built to account for Lorentzian spectral density.
+Parameters:
+- x0 : Array
+    Initial positions for the ODEs.
+- p0 : Array
+    Initial momenta for the ODEs.
+- tspan : Tuple or AbstractVector
+    Time span for integration, given as a tuple (tstart, tend) or an array of time points.
+- J : LorentzianSD
+    Physical parameters for the J-coupling interaction.
+- bfields : Tuple{Function, Function, Function}
+    Magnetic field components as functions of time.
+- matrix : Coupling
+    Coupling matrix.
 
-Keyword arguments:
-- `Ω` harmonic oscillator bare frequency set as default to `Ω=1.0`.
-- `saveat` is an option of the function `solve()` which allows to only save the solution at the points needed to evaluate the steady-state, i.e. at late times. Used to optimize memory management and speed of the solver. Default value is an empty list, `saveat=[]`, resulting in the solution being saved at optimal time steps within the time span.
-- `JH` is the Heisenberg coupling matrix. Note that this have to be a symmetric matrix with zero diagonal. The preset value is the additive identity of the UniformScaling type, `JH=zero(I)`.
-- `alg` chooses the solving algorithm.
-- `atol` and `rtol` define the absolute and relative tolerance of the solver.
+Keyword Arguments:
+- JH : Matrix, optional (default: zero(I))
+    Matrix representing the J-coupling interaction strengths.
+- Ω : Number, optional (default: 1.0)
+    Angular frequency.
+- saveat : AbstractVector, optional (default: [])
+    Time points to save the solution.
+- alg : Algorithm, optional (default: Tsit5())
+    Integration algorithm to use.
+- atol : Number, optional (default: 1e-3)
+    Absolute tolerance for the integration.
+- rtol : Number, optional (default: 1e-3)
+    Relative tolerance for the integration.
 
-# Examples
-```julia-repl
-julia> diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=((N*4÷5):1:N)*Δt)
-```
+Returns:
+- sol : ODESolution
+    Solution to the system of ODEs.
 """
 function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(x0), 3)
