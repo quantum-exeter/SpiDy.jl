@@ -101,12 +101,17 @@ A function that takes a frequency `ω` and returns the corresponding spectrum va
 spectrum(n::NoZeroQuantumNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2) - sign(ω))
 
 """
-```Julia
-psd(J::GenericSD, noise::Noise)
-```
+    function psd(J::GenericSD, noise::Noise)
 
-Returns the power spectral density depending on parameters `J` and `noise`. The returned
-function depends on `ω`.
+Calculate the Power Spectral Density (PSD) for a given environment spectral
+density `J` and noise model `noise`.
+
+# Arguments
+- `J::GenericSD`: The environment spectral density.
+- `noise::Noise`: The noise model for the environment.
+
+# Returns
+A function `psd(ω)` that calculates the PSD at a given frequency `ω`.
 """
 function psd(J::GenericSD, noise::Noise)
     imagK = imagkernel(J)
@@ -115,12 +120,4 @@ function psd(J::GenericSD, noise::Noise)
     return psd
 end
 
-"""
-```Julia
-psd(J::LorentzianSD, noise::ClassicalNoise)
-```
-
-Returns the analytical expression for power spectrum depending on Lorentzian spectral
-density and Classical noise. The returned function depends on `ω`.
-"""
 psd(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)
