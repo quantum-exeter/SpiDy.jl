@@ -54,6 +54,8 @@ struct NoZeroQuantumNoise{TT<:Real} <: Noise
     T::TT
 end
 
+# Returns the classical noise at temperature `n.T` as a function of `ω`. The conditional
+# statement makes sure the function does not divide by zero in case of `ω==0`.
 """
     spectrum(n::ClassicalNoise)
 
@@ -65,10 +67,10 @@ Construct the spectrum of [`ClassicalNoise`](@ref) at a given frequency.
 # Returns
 A function that takes a frequency `ω` and returns the corresponding spectrum value.
 """
-# Returns the classical noise at temperature `n.T` as a function of `ω`. The conditional
-# statement makes sure the function does not divide by zero in case of `ω==0`.
 spectrum(n::ClassicalNoise) = ω -> iszero(ω) ? zero(ω) : 2*n.T/ω
 
+# Returns the quantum noise at temperature `n.T` as a function of `ω`. The conditional
+# statement makes sure the function does not divide by zero in case of `ω==0`.
 """
     spectrum(n::QuantumNoise)
 
@@ -80,10 +82,11 @@ Construct the spectrum of [`QuantumNoise`](@ref) at a given frequency.
 # Returns
 A function that takes a frequency `ω` and returns the corresponding spectrum value.
 """
-# Returns the quantum noise at temperature `n.T` as a function of `ω`. The conditional
-# statement makes sure the function does not divide by zero in case of `ω==0`.
 spectrum(n::QuantumNoise) = ω -> iszero(n.T) ? sign(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2))
 
+# Returns the quantum noise at temperature `n.T` as a function of `ω`. The conditional
+# statement makes sure the function does not divide by zero in case of `ω==0`. It differs
+# from `spectrum(n::QuantumNoise)` in the fact that the zero-point noise is removed.
 """
     spectrum(n::NoZeroQuantumNoise)
 
@@ -95,7 +98,4 @@ Construct the spectrum of [`NoZeroQuantumNoise`](@ref) at a given frequency.
 # Returns
 A function that takes a frequency `ω` and returns the corresponding spectrum value.
 """
-# Returns the quantum noise at temperature `n.T` as a function of `ω`. The conditional
-# statement makes sure the function does not divide by zero in case of `ω==0`. It differs
-# from `spectrum(n::QuantumNoise)` in the fact that the zero-point noise is removed.
 spectrum(n::NoZeroQuantumNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2) - sign(ω))
