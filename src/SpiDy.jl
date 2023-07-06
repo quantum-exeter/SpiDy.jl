@@ -9,8 +9,8 @@ using LinearAlgebra
 using Random
 using Statistics
 
-include("Noise.jl");
 include("SpectralDensity.jl");
+include("Noise.jl");
 include("StochasticField.jl");
 include("CouplingTensor.jl");
 include("CouplingFunctions.jl");
