@@ -121,28 +121,3 @@ Of this kind, we find Lorentzian spectral densities, and Polynomial spectral den
 The spectral density is defined by the parameters in `J`. The returned function depends on `ω`.
 """
 imagkernel(J::GenericSD) = ω -> π*sd(J)(ω)
-
-"""
-```Julia
-psd(J::GenericSD, noise::Noise)
-```
-
-Returns the power spectral density depending on parameters `J` and `noise`. The returned
-function depends on `ω`.
-"""
-function psd(J::GenericSD, noise::Noise)
-    imagK = imagkernel(J)
-    n = spectrum(noise)
-    psd(ω) = imagK(ω)*n(ω)
-    return psd
-end
-
-"""
-```Julia
-psd(J::LorentzianSD, noise::ClassicalNoise)
-```
-
-Returns the analytical expression for power spectrum depending on Lorentzian spectral
-density and Classical noise. The returned function depends on `ω`.
-"""
-psd(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)

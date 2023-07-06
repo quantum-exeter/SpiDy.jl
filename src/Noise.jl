@@ -99,3 +99,28 @@ Construct the spectrum of [`NoZeroQuantumNoise`](@ref) at a given frequency.
 A function that takes a frequency `ω` and returns the corresponding spectrum value.
 """
 spectrum(n::NoZeroQuantumNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2) - sign(ω))
+
+"""
+```Julia
+psd(J::GenericSD, noise::Noise)
+```
+
+Returns the power spectral density depending on parameters `J` and `noise`. The returned
+function depends on `ω`.
+"""
+function psd(J::GenericSD, noise::Noise)
+    imagK = imagkernel(J)
+    n = spectrum(noise)
+    psd(ω) = imagK(ω)*n(ω)
+    return psd
+end
+
+"""
+```Julia
+psd(J::LorentzianSD, noise::ClassicalNoise)
+```
+
+Returns the analytical expression for power spectrum depending on Lorentzian spectral
+density and Classical noise. The returned function depends on `ω`.
+"""
+psd(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)
