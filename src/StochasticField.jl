@@ -1,3 +1,8 @@
+# Returns the stochastic field `b(t)`. It is evaluated using the Lorentzian spectral
+# density defined by the parameters `J`, the classical/quantum/quantum-no-zero-energy noise.
+# The sampling of the stochastic noise is done in frequency space. The default stochastic noise
+# is white noise having Gaussian distribution but different distributions can be specified.
+# `N` defines the number of steps and `Δt` defines the time step.
 """
     bfield(N, Δt, J::GenericSD, noise::Noise; distro=Normal(0., 1/sqrt(Δt)), interpolation=true)
 
@@ -15,11 +20,6 @@ based on the given noise model `noise` and spectral density `J`.
 # Returns
 A time series of the stochastic field values.
 """
-# Returns the stochastic field `b(t)`. It is evaluated using the Lorentzian spectral
-# density defined by the parameters `J`, the classical/quantum/quantum-no-zero-energy noise.
-# The sampling of the stochastic noise is done in frequency space. The default stochastic noise
-# is white noise having Gaussian distribution but different distributions can be specified.
-# `N` defines the number of steps and `Δt` defines the time step.
 function bfield(N, Δt, J::GenericSD, noise::Noise; distro=Normal(0., 1/sqrt(Δt)), interpolation=true)
     distrosample = rand(distro, N)
     distrosamplefft = rfft(distrosample)
