@@ -1,6 +1,7 @@
 module SpiDy
 
 using DifferentialEquations
+using SpectralDensities
 using PreallocationTools
 using Distributions
 using FFTW
@@ -9,7 +10,6 @@ using LinearAlgebra
 using Random
 using Statistics
 
-include("SpectralDensity.jl");
 include("Noise.jl");
 include("StochasticField.jl");
 include("CouplingTensor.jl");
@@ -19,8 +19,10 @@ include("Dynamics.jl");
 # export external files to build documentation
 export Noise, SpectralDensity, StochasticField, CouplingTensor, CouplingFunctions, Dynamics
 # export structures to build documentation
-export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, GenericSD, LorentzianSD, PolySD, Coupling, AnisoCoupling, IsoCoupling
+export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, Coupling, AnisoCoupling, IsoCoupling
 # export modules and functions to build documentation
-export spectrum, sd, sdoverω, reorgenergy, kernel, imagkernel, psd, bfield, Nchain, NNlattice, diffeqsolver
+export spectrum, psd, bfield, Nchain, NNlattice, diffeqsolver
+# export useful SpectralDensities.jl types and functions
+export SpectralDensities, AbstractSD, LorentzianSD
 
 end

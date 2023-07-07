@@ -21,6 +21,8 @@ and global (shared by all spins) stochastic noise from the environment.
 - `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
 - `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
 
+Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
+
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
@@ -99,6 +101,8 @@ or global (shared by all spins) stochastic noise from the environment.
 - `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
 - `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
 
+Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
+
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
@@ -138,6 +142,8 @@ or global (shared by all spins) stochastic noise from the environment.
 - `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
 - `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
 - `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
+
+Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
