@@ -13,7 +13,7 @@ abstract type Noise end
 
 A subtype of `Noise` used to represent classical noise, with spectrum
 ```math
-\\mathcal{S}(\\omega) = \\frac{k_\\mathrm{B}T}{\\hbar\\omega}
+\\mathcal{S}(\\omega) = \\frac{2k_\\mathrm{B}T}{\\hbar\\omega}
 ```
 
 # Fields
