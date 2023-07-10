@@ -101,22 +101,23 @@ A function that takes a frequency `ω` and returns the corresponding spectrum va
 spectrum(n::NoZeroQuantumNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2) - sign(ω))
 
 """
-    function psd(J::GenericSD, noise::Noise)
+    function psd(J::AbstractSD, noise::Noise)
 
 Calculate the Power Spectral Density (PSD) for a given environment spectral
 density `J` and noise model `noise`.
 
 # Arguments
-- `J::GenericSD`: The environment spectral density.
+- `J::AbstractSD`: The environment spectral density.
 - `noise::Noise`: The noise model for the environment.
+
+Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
 # Returns
 A function `psd(ω)` that calculates the PSD at a given frequency `ω`.
 """
-function psd(J::GenericSD, noise::Noise)
-    imagK = imagkernel(J)
+function psd(J::AbstractSD, noise::Noise)
     n = spectrum(noise)
-    psd(ω) = imagK(ω)*n(ω)
+    psd(ω) = imag_memory_kernel_ft(J,ω)*n(ω)
     return psd
 end
 
