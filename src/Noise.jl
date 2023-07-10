@@ -117,7 +117,7 @@ A function `psd(ω)` that calculates the PSD at a given frequency `ω`.
 """
 function psd(J::AbstractSD, noise::Noise)
     n = spectrum(noise)
-    psd(ω) = imag_memory_kernel_ft(J,ω)n(ω)
+    psd(ω) = imag_memory_kernel_ft(J,ω)*n(ω)
     return psd
 end
 
