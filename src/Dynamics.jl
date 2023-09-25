@@ -137,6 +137,7 @@ or global (shared by all spins) stochastic noise from the environment.
 - `matrix::Coupling`: The harmonic oscillators-environment coupling matrix.
 - `JH=zero(I)`: (Optional) The oscillator-oscillator coupling matrix. Default is zero matrix (i.e. non-interacting oscillators).
 - `Ω=1`: (Optional) The natural angular frequency of the harmonic oscillators (currently the same for all). Default is 1.
+- `counter_term=true`: (Optional) Whether to include the counter-term or not. Default is true.
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
 - `projection=true`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `true`.
 - `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
@@ -148,13 +149,14 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(x0), 3)
     u0 = [x0; p0; [0, 0, 0, 0, 0, 0]]
     Cω2 = matrix.C*transpose(matrix.C)
     bn = t -> matrix.C*[bfields[1](t), bfields[2](t), bfields[3](t)];
     Cω2v = zeros(3)
     Beff = zeros(3)
+    Ωeff2 = counter_term ? Ω^2 + 2*reorganisation_energy(J) : Ω^2
     function f(du, u, par, t)
         x = @view u[1:3*N]
         p = @view u[1+3*N:6*N]
@@ -163,7 +165,7 @@ function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfields, matrix::Coupling;
         Beff .= bn(t) + mul!(Cω2v, Cω2, v)
         for i in 1:N
             du[1+(i-1)*3:3+(i-1)*3] = p[1+(i-1)*3:3+(i-1)*3]
-            du[1+3*N+(i-1)*3:3+3*N+(i-1)*3] = -(Ω^2)*x[1+(i-1)*3:3+(i-1)*3] + Beff + sum([JH[i,j] * x[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
+            du[1+3*N+(i-1)*3:3+3*N+(i-1)*3] = -Ωeff2*x[1+(i-1)*3:3+(i-1)*3] + Beff + sum([JH[i,j] * x[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
         end
         du[1+6*N:3+6*N] = w
         du[4+6*N:6+6*N] = -(J.ω0^2)*v -J.Γ*w +J.α*sum([x[(1+(j-1)*3):(3+(j-1)*3)] for j in 1:N])
