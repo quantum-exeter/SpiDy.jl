@@ -8,9 +8,15 @@
 
 **(It is pronounced "spee-dee" 😊)**
 
-Spin-Dynamics Julia package. The code is a generalization of the results obtained in the paper <a href=https://doi.org/10.1088/1367-2630/ac4ef2>"Quantum Brownian motion for magnets"</a> to account for arbitrary dimensional system-bath coupling. The system considered is a quantized three-dimensional spin + environment Hamiltonian. The code solves a set of differential equations for the spin vector where the damping accounts for memory, arbitrary noise and arbitrary statistics.
+SpiDy.jl is a Julia package that solves the non-Markovian stochastic dynamics of interacting classical spin vectors and harmonic oscillator networks in contact with a dissipative environment. The methods implemented allow the user to include arbitrary memory effects and colored quantum noise spectra. In this way, SpiDy.jl provides key tools for the simulation of classical and quantum open systems including non-Markovian effects and arbitrarily strong coupling to the environment. Among the wide range of applications, some examples range from atomistic spin dynamics to ultrafast magnetism and the study of anisotropic materials. We provide the user with Julia notebooks to guide them through the various mathematical methods and help them quickly set up complex simulations.
 
-The classical simulations in anisotropic coupling found in the pre-print <a href=https://arxiv.org/abs/2204.10874>"Quantum-classical correspondence in spin-boson equilibrium states at arbitrary coupling"</a> have been generated using a very-early-version of this code.
+## Reference paper
+This is the reference paper for a quick overview and start with the code. You might also want to cite it in case it is useful!
+
+arXiv preprint -> <a href=https://arxiv.org/abs/2310.03008>https://arxiv.org/abs/2310.03008</a>
+
+## Online documentation
+Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/">this link</a>.
 
 ## Install Julia
 If you are new to Julia, here is how to install it.
@@ -57,6 +63,3 @@ where you want to replace "6" with the number of threads that you wish to use. A
 * **runs**: contains run_*.jl files which can be used as a template to run the code
 * **src**: contains the source code
 * **starthere**: contains an ipynb notebook written in Julia which walks you through bits and pieces of the code with explanatory plots *(the notebook is evolving over time but always ready to use)*
-
-## Online documentation
-Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/">this link</a>.
