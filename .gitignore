@@ -35,6 +35,7 @@ notebooks/plot.ipynb
 *.npz
 *.csv
 *.pdf
+!paper/spin_dynamics.pdf
 
 # Ignore test folders
 data_test/
