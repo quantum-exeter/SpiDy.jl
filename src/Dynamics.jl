@@ -26,25 +26,30 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{Vector{T}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
-    u0 = [s0; zeros(6*N+6)]
-    Cω2 = matrix.C*transpose(matrix.C)
-    b = []
-    for i in 1:N
-        push!(b, t -> matrix.C*[bfields[i][1](t), bfields[i][2](t), bfields[i][3](t)]);
+    M = length(Jlist)
+    u0 = [s0; zeros(6*M)]
+    if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
+        throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
     end
-    bshared = t -> matrix.C*[bfieldshared[1](t), bfieldshared[2](t), bfieldshared[3](t)];
+    Cω2 = []
+    b = []
+    for i in 1:M
+        push!(Cω2, matrix[i].C*transpose(matrix[i].C))
+        push!(b, t -> matrix[i].C*[bfield[i][1](t), bfield[i][2](t), bfield[i][3](t)]);
+    end
     function f(du, u, (Cω2v, Beff), t)
         Cω2v = get_tmp(Cω2v, u)
         Beff = get_tmp(Beff, u)
         s = @view u[1:3*N]
-        v = @view u[1+3*N:6*N]
-        w = @view u[1+6*N:9*N]
-        vshared = @view u[1+9*N:3+9*N]
-        wshared = @view u[4+9*N:6+9*N]
+        v = @view u[1+3*N:3*N+3*M]
+        w = @view u[1+3*N+3*M:3*N+6*M]
         for i in 1:N
-            Beff[i, :] .= Bext + bshared(t) + b[i](t) + mul!(Cω2v, Cω2, vshared + v[1+(i-1)*3:3+(i-1)*3])
+            Beff[i, :] .= Bext 
+            for j in 1:M
+                Beff[i, :] .+= bcoupling[j][i]*(b[j](t) + mul!(Cω2v, Cω2[j], v[1+(j-1)*3:3+(j-1)*3]))
+            end
         end
         for i in 1:N
             du[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[i,3]-s[3+(i-1)*3]*Beff[i,2])
@@ -56,14 +61,12 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields
                 du[3+(i-1)*3] += -(s[1+(i-1)*3]*JH[i,j]*s[2+(j-1)*3]-s[2+(i-1)*3]*JH[i,j]*s[1+(j-1)*3])
             end
         end
-        du[1+3*N:6*N] = w
-        du[1+6*N:9*N] = -(J.ω0^2)*v -J.Γ*w -J.α*s
-        du[1+9*N:3+9*N] = wshared
-        du[4+9*N:6+9*N] = -(Jshared.ω0^2)*vshared -Jshared.Γ*wshared
-        for i in 1:N
-            du[4+9*N] += -Jshared.α*s[(1+(i-1)*3)]
-            du[5+9*N] += -Jshared.α*s[(2+(i-1)*3)]
-            du[6+9*N] += -Jshared.α*s[(3+(i-1)*3)]
+        du[1+3*N:3*N+3*M] = w
+        for i in 1:M
+            du[1+3*N+3*M+3*(i-1):3+3*N+3*M+3*(i-1)] = -(Jlist[i].ω0^2)*v[1+3*(i-1):3+3*(i-1)] -Jlist[i].Γ*w[1+3*(i-1):3+3*(i-1)]
+            for j in 1:N
+                du[1+3*N+3*M+3*(i-1):3+3*N+3*M+3*(i-1)] += -Jlist[i].α*bcoupling[i][j]*s[1+3*(j-1):3+3*(j-1)]
+            end
         end
     end
     prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N,3))))
@@ -106,19 +109,22 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfields, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
-    if length(bfields) == N && length(bfields[1]) == 3 # only local baths
-        Jshared = LorentzianSD(0, 0, 0)
-        bfieldshared = [t -> 0, t -> 0, t -> 0]
-        return diffeqsolver(s0, tspan, J, Jshared, bfields, bfieldshared, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
-    else # only shared bath
-        Jlocal = LorentzianSD(0, 0, 0)
-        bfieldslocal = []
-        for _ in 1:N
-            push!(bfieldslocal, [t -> 0, t -> 0, t -> 0])
+    if length(bfield) == N && length(bfield[1]) == 3 # only local baths
+        Jlist = repeat([J], N)
+        bcoupling = []
+        for i in 1:N
+            push!(bcoupling, I(N)[i,:])
         end
-        return diffeqsolver(s0, tspan, Jlocal, J, bfieldslocal, bfields, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
+        matrix = repeat([matrix], N)
+        return diffeqsolver(s0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
+    else # only shared bath
+        Jlist = [J]
+        bfield = [bfield]
+        bcoupling = [ones(N)]
+        matrix = [matrix]
+        return diffeqsolver(s0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
     end
 end
 
