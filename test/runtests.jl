@@ -40,7 +40,11 @@ using Test
         @test sol.retcode == SciMLBase.ReturnCode.Success
 
         # both local and shared noise
-        sol = diffeqsolver(s0, tspan, J, J, [bfields, bfields, bfields, bfields], bfields, Cw; JH=JH, saveat=saveat);
+        Jlist = [J, J, J, J, J]
+        bfieldlist = [bfields, bfields, bfields, bfields, bfields]
+        bcoupling = [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1],[1,1,1,1]]
+        matrix = [Cw, Cw, Cw, Cw, Cw]
+        sol = diffeqsolver(s0, tspan, Jlist, bfieldlist, bcoupling, matrix; JH=JH, saveat=saveat);
         @test sol.retcode == SciMLBase.ReturnCode.Success
     end
 end
