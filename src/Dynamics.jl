@@ -115,10 +115,7 @@ function diffeqsolver(s0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=z
     N = div(length(s0), 3)
     if length(bfield) == N && length(bfield[1]) == 3 # only local baths
         Jlist = repeat([J], N)
-        bcoupling = []
-        for i in 1:N
-            push!(bcoupling, I(N)[i,:])
-        end
+        bcoupling = [I(N)[i,:] for i in 1:N]
         matrix = repeat([matrix], N)
         return diffeqsolver(s0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
     else # only shared bath
