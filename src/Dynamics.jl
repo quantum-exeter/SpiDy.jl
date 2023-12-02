@@ -26,13 +26,19 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{Vector{T}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
-    N = div(length(s0), 3)
-    M = length(Jlist)
-    u0 = [s0; zeros(6*M)]
+function diffeqsolver(s0, tspan, Jlist::Vector{InversePolyKernelSD}, bfield, bcoupling::Vector{Vector{T}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
     end
+    N = div(length(s0), 3)
+    M = length(Jlist)
+    D = maximum([J.deg for J in Jlist])
+    coeffs = zeros(Float64, D+1, M) # NB: the length of the coeffs vector is D+1 (degree + zero coeff)
+    for (idx, J) in enumerate(Jlist)
+        coeffs[1:J.deg, idx] = [(-1)^(k÷2)*J.coeffs[k]/J.coeffs[J.deg+1] for k in 1:J.deg]
+        coeffs[J.deg+1, idx] = (-1)^(J.deg+1)/J.coeffs[J.deg+1]
+    end
+    u0 = [s0; zeros(3*M*D)]
     Cω2 = []
     b = []
     for i in 1:M
@@ -43,33 +49,44 @@ function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling:
         Cω2v = get_tmp(Cω2v, u)
         Beff = get_tmp(Beff, u)
         s = @view u[1:3*N]
-        v = @view u[1+3*N:3*N+3*M]
-        w = @view u[1+3*N+3*M:3*N+6*M]
+        v = @view u[1+3*N:3*N+3*M*D]
+        ds = @view du[1:3*N]
+        dv = @view du[1+3*N:3*N+3*M*D]
         for i in 1:N
-            Beff[i, :] .= Bext 
+            Beff[i, :] .= Bext
             for j in 1:M
-                Beff[i, :] .+= bcoupling[j][i]*(b[j](t) + mul!(Cω2v, Cω2[j], v[1+(j-1)*3:3+(j-1)*3]))
+                Beff[i, :] .+= bcoupling[j][i] * (b[j](t) + mul!(Cω2v, Cω2[j], v[1+(j-1)*3*D:3+(j-1)*3*D]))
             end
         end
         for i in 1:N
-            du[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[i,3]-s[3+(i-1)*3]*Beff[i,2])
-            du[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[i,1]-s[1+(i-1)*3]*Beff[i,3])
-            du[3+(i-1)*3] = -(s[1+(i-1)*3]*Beff[i,2]-s[2+(i-1)*3]*Beff[i,1])
+            ds[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[i,3]-s[3+(i-1)*3]*Beff[i,2])
+            ds[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[i,1]-s[1+(i-1)*3]*Beff[i,3])
+            ds[3+(i-1)*3] = -(s[1+(i-1)*3]*Beff[i,2]-s[2+(i-1)*3]*Beff[i,1])
             for j in 1:N
-                du[1+(i-1)*3] += -(s[2+(i-1)*3]*JH[i,j]*s[3+(j-1)*3]-s[3+(i-1)*3]*JH[i,j]*s[2+(j-1)*3])
-                du[2+(i-1)*3] += -(s[3+(i-1)*3]*JH[i,j]*s[1+(j-1)*3]-s[1+(i-1)*3]*JH[i,j]*s[3+(j-1)*3])
-                du[3+(i-1)*3] += -(s[1+(i-1)*3]*JH[i,j]*s[2+(j-1)*3]-s[2+(i-1)*3]*JH[i,j]*s[1+(j-1)*3])
+                ds[1+(i-1)*3] += -(s[2+(i-1)*3]*JH[i,j]*s[3+(j-1)*3]-s[3+(i-1)*3]*JH[i,j]*s[2+(j-1)*3])
+                ds[2+(i-1)*3] += -(s[3+(i-1)*3]*JH[i,j]*s[1+(j-1)*3]-s[1+(i-1)*3]*JH[i,j]*s[3+(j-1)*3])
+                ds[3+(i-1)*3] += -(s[1+(i-1)*3]*JH[i,j]*s[2+(j-1)*3]-s[2+(i-1)*3]*JH[i,j]*s[1+(j-1)*3])
             end
         end
-        du[1+3*N:3*N+3*M] = w
         for i in 1:M
-            du[1+3*N+3*M+3*(i-1):3+3*N+3*M+3*(i-1)] = -(Jlist[i].ω0^2)*v[1+3*(i-1):3+3*(i-1)] -Jlist[i].Γ*w[1+3*(i-1):3+3*(i-1)]
+            Dtmp = findlast(x->x!=0, coeffs[:, i])-1
+            for j in 1:Dtmp-1
+                dv[1+(j-1)*3+(i-1)*3*D:3+(j-1)*3+(i-1)*3*D] = v[1+j*3+(i-1)*3*D:3+j*3+(i-1)*3*D]
+            end
+        end
+        for i in 1:M
+            Dtmp = findlast(x->x!=0, coeffs[:, i])-1
+            # dv[1+(Dtmp-1)*3+(i-1)*3*D:3+(Dtmp-1)*3+(i-1)*3*D] = coeffs[1, i]*v[1+(i-1)*3*D:3+(i-1)*3*D]
+            # for j in 2:Dtmp
+            #     dv[1+(Dtmp-1)*3+(i-1)*3*D:3+(Dtmp-1)*3+(i-1)*3*D] += coeffs[j, i]*v[1+(j-1)*3+(i-1)*3*D:3+(j-1)*3+(i-1)*3*D]
+            # end
+            dv[1+(Dtmp-1)*3+(i-1)*3*D:3+(Dtmp-1)*3+(i-1)*3*D] = sum(reshape(repeat(coeffs[1:Dtmp, i], inner=3) .* v[1+(i-1)*3*D:Dtmp*3+(i-1)*3*D], 3, :), dims=2)
             for j in 1:N
-                du[1+3*N+3*M+3*(i-1):3+3*N+3*M+3*(i-1)] += -Jlist[i].α*bcoupling[i][j]*s[1+3*(j-1):3+3*(j-1)]
+                dv[1+(Dtmp-1)*3+(i-1)*3*D:3+(Dtmp-1)*3+(i-1)*3*D] += coeffs[Dtmp+1, i]*bcoupling[i][j]*s[1+(j-1)*3:3+(j-1)*3]
             end
         end
     end
-    prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N,3))))
+    prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N, 3))))
     condition(u, t, integrator) = true
     function affect!(integrator) # projection
         for n in 1:N
@@ -82,6 +99,95 @@ function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling:
     sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat; skwargs...)
     return sol
 end
+
+
+# """
+#     function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+
+# Solves the dynamics of a system of ineracting spins under the influence of *both* local (unique to each spin)
+# and global (shared by all spins) stochastic noise from the environment.
+
+# # Arguments
+# - `s0`: Array of length `3N` specifying the initial conditions of the `N` spins. The order the initial consitions is first the `Sx,Sy,Sz` for the first spin, then for the second, and so on.
+# - `tspan`: The time span to solve the equations over, specified as a tuple `(tstart, tend)`.
+# - `J::LorentzianSD`: The spectral density of the noise acting locally (i.e. independently) on each spin.
+# - `Jshared::LorentzianSD`: The spectral density of the noise acting globally on all spins.
+# - `bfields`: An array of tuples of functions `Array{Tuple{Function, Function, Function}}` representing the time series of the local stochastic field for each spin.
+# - `bfieldshared`: A tuple of functions `Tuple{Function, Function, Function}` representing the time series of the global stochastic field shared by all the spins.
+# - `matrix::Coupling`: The spin-environment coupling matrix.
+# - `JH=zero(I)`: (Optional) The spin-spin coupling matrix. Default is zero matrix (i.e. non-interacting spins).
+# - `S0=1/2`: (Optional) The spin quantum number. Default is 1/2.
+# - `Bext=[0, 0, 1]`: (Optional) The external magnetic field vector. Default is `[0, 0, 1]` (normalised length pointing in the `z` direction).
+# - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
+# - `projection=true`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `true`.
+# - `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
+# - `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
+# - `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
+
+# Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
+
+# # Returns
+# An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
+# """
+# function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{Vector{T}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+#     N = div(length(s0), 3)
+#     M = length(Jlist)
+#     u0 = [s0; zeros(6*M)]
+#     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
+#         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
+#     end
+#     Cω2 = []
+#     b = []
+#     for i in 1:M
+#         push!(Cω2, matrix[i].C*transpose(matrix[i].C))
+#         push!(b, t -> matrix[i].C*[bfield[i][1](t), bfield[i][2](t), bfield[i][3](t)]);
+#     end
+#     function f(du, u, (Cω2v, Beff), t)
+#         Cω2v = get_tmp(Cω2v, u)
+#         Beff = get_tmp(Beff, u)
+#         s = @view u[1:3*N]
+#         v = @view u[1+3*N:3*N+3*M]
+#         w = @view u[1+3*N+3*M:3*N+6*M]
+#         ds = @view du[1:3*N]
+#         dv = @view du[1+3*N:3*N+3*M]
+#         dw = @view du[1+3*N+3*M:3*N+6*M]
+#         for i in 1:N
+#             Beff[i, :] .= Bext 
+#             for j in 1:M
+#                 Beff[i, :] .+= bcoupling[j][i]*(b[j](t) + mul!(Cω2v, Cω2[j], v[1+(j-1)*3:3+(j-1)*3]))
+#             end
+#         end
+#         for i in 1:N
+#             ds[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[i,3]-s[3+(i-1)*3]*Beff[i,2])
+#             ds[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[i,1]-s[1+(i-1)*3]*Beff[i,3])
+#             ds[3+(i-1)*3] = -(s[1+(i-1)*3]*Beff[i,2]-s[2+(i-1)*3]*Beff[i,1])
+#             for j in 1:N
+#                 ds[1+(i-1)*3] += -(s[2+(i-1)*3]*JH[i,j]*s[3+(j-1)*3]-s[3+(i-1)*3]*JH[i,j]*s[2+(j-1)*3])
+#                 ds[2+(i-1)*3] += -(s[3+(i-1)*3]*JH[i,j]*s[1+(j-1)*3]-s[1+(i-1)*3]*JH[i,j]*s[3+(j-1)*3])
+#                 ds[3+(i-1)*3] += -(s[1+(i-1)*3]*JH[i,j]*s[2+(j-1)*3]-s[2+(i-1)*3]*JH[i,j]*s[1+(j-1)*3])
+#             end
+#         end
+#         du[1+3*N:3*N+3*M] = w
+#         for i in 1:M
+#             du[1+3*N+3*M+3*(i-1):3+3*N+3*M+3*(i-1)] = -(Jlist[i].ω0^2)*v[1+3*(i-1):3+3*(i-1)] -Jlist[i].Γ*w[1+3*(i-1):3+3*(i-1)]
+#             for j in 1:N
+#                 du[1+3*N+3*M+3*(i-1):3+3*N+3*M+3*(i-1)] += -Jlist[i].α*bcoupling[i][j]*s[1+3*(j-1):3+3*(j-1)]
+#             end
+#         end
+#     end
+#     prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N,3))))
+#     condition(u, t, integrator) = true
+#     function affect!(integrator) # projection
+#         for n in 1:N
+#             integrator.u[1+(n-1)*3:3+(n-1)*3] ./= norm(integrator.u[1+(n-1)*3:3+(n-1)*3])
+#         end
+#         u_modified!(integrator, false)
+#     end
+#     cb = DiscreteCallback(condition, affect!, save_positions=(false,false))
+#     skwargs = projection ? (callback=cb,) : NamedTuple()
+#     sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat; skwargs...)
+#     return sol
+# end
 
 """
     function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
