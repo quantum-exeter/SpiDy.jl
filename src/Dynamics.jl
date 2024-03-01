@@ -1,5 +1,5 @@
 """
-    function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+    function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
 Solves the dynamics of a system of ineracting spins under the influence of *both* local (unique to each spin)
 and global (shared by all spins) stochastic noise from the environment.
@@ -15,6 +15,7 @@ and global (shared by all spins) stochastic noise from the environment.
 - `S0=1/2`: (Optional) The spin quantum number. Default is 1/2.
 - `Bext=[0, 0, 1]`: (Optional) The external magnetic field vector. Default is `[0, 0, 1]` (normalised length pointing in the `z` direction).
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
+- `save_fields=false`: (Optional) If true, also return the auxiliary fields encoding the environment memory.
 - `projection=true`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `true`.
 - `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
 - `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
@@ -25,7 +26,7 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
@@ -81,12 +82,17 @@ function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling:
     end
     cb = DiscreteCallback(condition, affect!, save_positions=(false,false))
     skwargs = projection ? (callback=cb,) : NamedTuple()
-    sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=1:3*N, saveat=saveat; skwargs...)
+    if save_fields
+        save_idxs = 1:(3*N+6*M)
+    else
+        save_idxs = 1:3*N
+    end
+    sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat; skwargs...)
     return sol
 end
 
 """
-    function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+    function diffeqsolver(s0, tspan, J::LorentzianSD, Jshared::LorentzianSD, bfields, bfieldshared, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
 Solves the dynamics of a system of ineracting spins under the influence of *either* local (unique to each spin)
 or global (shared by all spins) stochastic noise from the environment.
@@ -101,6 +107,7 @@ or global (shared by all spins) stochastic noise from the environment.
 - `S0=1/2`: (Optional) The spin quantum number. Default is 1/2.
 - `Bext=[0, 0, 1]`: (Optional) The external magnetic field vector. Default is `[0, 0, 1]` (normalised length pointing in the `z` direction).
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
+- `save_fields=false`: (Optional) If true, also return the auxiliary fields encoding the environment memory.
 - `projection=true`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `true`.
 - `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
 - `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
@@ -111,20 +118,20 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(s0), 3)
     if length(bfield) == N && length(bfield[1]) == 3 # only local baths
         Jlist = repeat([J], N)
         bcoupling = [I(N)[i,:] for i in 1:N]
         matrix = repeat([matrix], N)
-        return diffeqsolver(s0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
+        return diffeqsolver(s0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, save_fields=save_fields, projection=projection, alg=alg, atol=atol, rtol=rtol)
     else # only shared bath
-        return diffeqsolver(s0, tspan, [J], [bfield], [ones(N)], [matrix]; JH=JH, S0=S0, Bext=Bext, saveat=saveat, projection=projection, alg=alg, atol=atol, rtol=rtol)
+        return diffeqsolver(s0, tspan, [J], [bfield], [ones(N)], [matrix]; JH=JH, S0=S0, Bext=Bext, saveat=saveat, save_fields=save_fields, projection=projection, alg=alg, atol=atol, rtol=rtol)
     end
 end
 
 """
-    function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I),  Ω=1.0, counter_term=true, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
+    function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I),  Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
 Solves the dynamics of a system of ineracting oscillators under the influence of *both* local (unique to each oscillator)
 and global (shared by all oscillators) stochastic noise from the environment.
@@ -141,6 +148,7 @@ and global (shared by all oscillators) stochastic noise from the environment.
 - `Ω=1.0`: (Optional) The natural angular frequency of the harmonic oscillators (currently the same for all). Default is 1.
 - `counter_term=true`: (Optional) Whether to include the counter-term or not. Default is true.
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
+- `save_fields=false`: (Optional) If true, also return the auxiliary fields encoding the environment memory.
 - `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
 - `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
 - `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
@@ -151,7 +159,7 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
 
-function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(x0), 3)
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
@@ -202,13 +210,18 @@ function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupl
             end
         end
     end
+    if save_fields
+        save_idxs = 1:(6*N+6*M)
+    else
+        save_idxs = 1:6*N
+    end
     prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N,3))))
-    sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=1:6*N, saveat=saveat)
+    sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat)
     return sol
 end
 
 """
-    function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
+    function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3)
 
 Solves the dynamics of a system of ineracting oscillators under the influence of *either* local (unique to each oscillator)
 or global (shared by all oscillators) stochastic noise from the environment.
@@ -224,6 +237,7 @@ or global (shared by all oscillators) stochastic noise from the environment.
 - `Ω=1.0`: (Optional) The natural angular frequency of the harmonic oscillators (currently the same for all). Default is 1.
 - `counter_term=true`: (Optional) Whether to include the counter-term or not. Default is true.
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
+- `save_fields=false`: (Optional) If true, also return the auxiliary fields encoding the environment memory.
 - `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
 - `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
 - `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
@@ -233,14 +247,14 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3)
     N = div(length(x0), 3)
     if length(bfield) == N && length(bfield[1]) == 3 # only local baths
         Jlist = repeat([J], N)
         bcoupling = [I(N)[i,:] for i in 1:N]
         matrix = repeat([matrix], N)
-        return diffeqsolver(x0, p0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, Ω=Ω, counter_term=counter_term, saveat=saveat, alg=alg, atol=atol, rtol=rtol)
+        return diffeqsolver(x0, p0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, Ω=Ω, counter_term=counter_term, saveat=saveat, save_fields=save_fields, alg=alg, atol=atol, rtol=rtol)
     else # only shared bath
-        return diffeqsolver(x0, p0, tspan, [J], [bfield], [ones(N)], [matrix]; JH=JH, Ω=Ω, counter_term=counter_term, saveat=saveat, alg=alg, atol=atol, rtol=rtol)
+        return diffeqsolver(x0, p0, tspan, [J], [bfield], [ones(N)], [matrix]; JH=JH, Ω=Ω, counter_term=counter_term, saveat=saveat, save_fields=save_fields, alg=alg, atol=atol, rtol=rtol)
     end
 end
