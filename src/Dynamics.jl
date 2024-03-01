@@ -83,9 +83,9 @@ function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling:
     cb = DiscreteCallback(condition, affect!, save_positions=(false,false))
     skwargs = projection ? (callback=cb,) : NamedTuple()
     if save_fields
-        save_idxs = 1:(6*N+6*M)
+        save_idxs = 1:(3*N+6*M)
     else
-        save_idxs = 1:6*N
+        save_idxs = 1:3*N
     end
     sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat; skwargs...)
     return sol
