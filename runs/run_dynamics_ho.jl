@@ -25,7 +25,7 @@ noise = ClassicalNoise(10.);
 x0 = [1., 0., 0.]
 p0 = [0., 0., 0.]
 
-N = div(length(x0), 3)
+nosc = div(length(x0), 3)
 
 navg = 10
 
@@ -35,16 +35,16 @@ navg = 10
 println("Starting...")
 
 progress = Progress(navg);
-solx = zeros(navg, length(saveat), 3*N)
-solp = zeros(navg, length(saveat), 3*N)
+solx = zeros(navg, length(saveat), 3*nosc)
+solp = zeros(navg, length(saveat), 3*nosc)
 
 Threads.@threads for i in 1:navg
     bfields = [bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise)];
     sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
-    solx[i, :, :] = transpose(sol[1:3*N, :])
-    solp[i, :, :] = transpose(sol[1+3*N:6*N, :])
+    solx[i, :, :] = transpose(sol[1:3*nosc, :])
+    solp[i, :, :] = transpose(sol[1+3*nosc:6*nosc, :])
     next!(progress)
 end
 
