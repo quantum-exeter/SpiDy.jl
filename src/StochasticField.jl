@@ -28,5 +28,5 @@ function bfield(N, Δt, J::AbstractSD, noise::Noise; distro=Normal(0., 1/sqrt(Δ
     psdfft = psd(J, noise).(2π*rfftfreq(N, 1/Δt)) # NB: rfftfreq(N, 1/Δt) takes the frequency step in input!
     bfft = sqrt.(psdfft).*distrosamplefft
     b = irfft(bfft, N)
-    return interpolation ? LinearInterpolation(LinRange(0, N*Δt, N), b) : b
+    return interpolation ? linear_interpolation(LinRange(0, N*Δt, N), b) : b
 end
