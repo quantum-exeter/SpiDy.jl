@@ -5,6 +5,7 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://quantum-exeter.github.io/SpiDy.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://quantum-exeter.github.io/SpiDy.jl/dev/)
 [![Build Status](https://github.com/quantum-exeter/SpiDy.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/quantum-exeter/SpiDy.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![DOI](https://zenodo.org/badge/503385195.svg)](https://zenodo.org/doi/10.5281/zenodo.11283977)
 
 **(It is pronounced "spee-dee" 😊)**
 
