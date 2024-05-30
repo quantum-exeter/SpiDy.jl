@@ -5,6 +5,7 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://quantum-exeter.github.io/SpiDy.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://quantum-exeter.github.io/SpiDy.jl/dev/)
 [![Build Status](https://github.com/quantum-exeter/SpiDy.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/quantum-exeter/SpiDy.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.06263/status.svg)](https://doi.org/10.21105/joss.06263)
 [![DOI](https://zenodo.org/badge/503385195.svg)](https://zenodo.org/doi/10.5281/zenodo.11283977)
 
 **(It is pronounced "spee-dee" 😊)**
@@ -12,9 +13,30 @@
 SpiDy.jl is a Julia package that solves the non-Markovian stochastic dynamics of interacting classical spin vectors and harmonic oscillator networks in contact with a dissipative environment. The methods implemented allow the user to include arbitrary memory effects and colored quantum noise spectra. In this way, SpiDy.jl provides key tools for the simulation of classical and quantum open systems including non-Markovian effects and arbitrarily strong coupling to the environment. Among the wide range of applications, some examples range from atomistic spin dynamics to ultrafast magnetism and the study of anisotropic materials. We provide the user with Julia notebooks to guide them through the various mathematical methods and help them quickly set up complex simulations.
 
 ## Reference paper
-This is the reference paper for a quick overview and start with the code. You might also want to cite it in case it is useful!
+This is the reference paper for a quick overview. You might also want to cite it in case it is useful!
+
+JOSS publication -> <a href=https://joss.theoj.org/papers/10.21105/joss.06263>https://joss.theoj.org/papers/10.21105/joss.06263</a>
 
 arXiv preprint -> <a href=https://arxiv.org/abs/2310.03008>https://arxiv.org/abs/2310.03008</a>
+
+<details>
+  <summary>Bibtex citation</summary>
+  
+  ```tex
+  @article{Scali2024,
+    doi = {10.21105/joss.06263},
+    url = {https://doi.org/10.21105/joss.06263},
+    year = {2024},
+    publisher = {The Open Journal},
+    volume = {9},
+    number = {97},
+    pages = {6263},
+    author = {Stefano Scali and Simon Horsley and Janet Anders and Federico Cerisola},
+    title = {SpiDy.jl: open-source Julia package for the study of non-Markovian stochastic dynamics},
+    journal = {Journal of Open Source Software}
+  }
+  ```
+</details>
 
 ## Online documentation
 Check the online documentation at <a href="https://quantum-exeter.github.io/SpiDy.jl/dev/">this link</a>.
