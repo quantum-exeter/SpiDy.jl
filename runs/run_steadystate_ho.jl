@@ -24,7 +24,7 @@ T = 10 .^ LinRange(-3, 3, 24)
 
 navg = 10 # number of stochastic field realizations to average
 
-N = 1
+nosc = 1
 
 ########################
 ########################
@@ -32,13 +32,13 @@ N = 1
 println("Starting...")
 
 progress = Progress(length(T));
-xss = zeros(length(T), 3*N)
-pss = zeros(length(T), 3*N)
+xss = zeros(length(T), 3*nosc)
+pss = zeros(length(T), 3*nosc)
 
 for n in eachindex(T)
     noise = ClassicalNoise(T[n]);
-    x = zeros(navg, 3*N)
-    p = zeros(navg, 3*N)
+    x = zeros(navg, 3*nosc)
+    p = zeros(navg, 3*nosc)
     Threads.@threads for i in 1:navg
         x0 = [1., 0., 0.]
         p0 = [0., 0., 0.]
@@ -46,8 +46,8 @@ for n in eachindex(T)
                    bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise)];
         sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
-        x[i, :] = mean(sol[1:3*N, :].^2, dims=2)
-        p[i, :] = mean(sol[1+3*N:6*N, :].^2, dims=2)
+        x[i, :] = mean(sol[1:3*nosc, :].^2, dims=2)
+        p[i, :] = mean(sol[1+3*nosc:6*nosc, :].^2, dims=2)
     end
     xss[n, :] = mean(x, dims=1)
     pss[n, :] = mean(p, dims=1)
