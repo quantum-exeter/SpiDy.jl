@@ -46,7 +46,7 @@ Threads.@threads for i in 1:navg
                bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise)];
     sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat);
-    sols[i, :, :] = transpose(sol[:, :])
+    sols[i, :, :] = transpose(Array(sol)[:, :])
     next!(progress)
 end
 solavg = mean(sols, dims=1)[1, :, :];

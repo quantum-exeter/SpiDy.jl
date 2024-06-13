@@ -42,7 +42,7 @@ for i in 1:ntraj # iterations through the number of trajectories
                      bfield(N, Δt, Jsd, noise)] # stochastic fields
     # diffeqsolver (below) solves the system for the single trajectory
     local sol = diffeqsolver(s0, tspan, Jsd, bfields, Cw; saveat=saveat)
-    sols[i,:,:] = sol[:,:] # store the trajectory into the matrix of solutions
+    sols[i,:,:] = Array(sol) # store the trajectory into the matrix of solutions
 end
 
 ### example plot ###
