@@ -40,16 +40,16 @@ JH = Nchain(nspin, J0)
 
 println("Starting...")
 progress = Progress(navg);
-sols = zeros(navg, length(saveat), 3*nspin)
+sols = zeros(navg, 3*nspin, length(saveat))
 Threads.@threads for i in 1:navg
     bfields = [bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise)];
     sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat);
-    sols[i, :, :] = transpose(sol[:, :])
+    sols[i, :, :] = Array(sol)
     next!(progress)
 end
-solavg = mean(sols, dims=1)[1, :, :];
+solavg = dropdims(mean(sols, dims=1), dims=1);
 
 ########################
 ########################
@@ -60,17 +60,17 @@ npzwrite("./dynamics.npz", Dict("t" => saveat,
 
 ### Save data CSV ###
 dataframe = DataFrame(t = saveat,
-                      Sx = solavg[:, 1],
-                      Sy = solavg[:, 2],
-                      Sz = solavg[:, 3])
+                      Sx = solavg[1, :],
+                      Sy = solavg[2, :],
+                      Sz = solavg[3, :])
 CSV.write("./dynamics.csv", dataframe)
 
 ### Plots ###
-plot(saveat, solavg[:, 1], xlabel="t", ylabel="S_x")
+plot(saveat, solavg[1, :], xlabel="t", ylabel="S_x")
 savefig("./sx.pdf")
 
-plot(saveat, solavg[:, 2], xlabel="t", ylabel="S_y")
+plot(saveat, solavg[2, :], xlabel="t", ylabel="S_y")
 savefig("./sy.pdf")
 
-plot(saveat, solavg[:, 3], xlabel="t", ylabel="S_z")
+plot(saveat, solavg[3, :], xlabel="t", ylabel="S_z")
 savefig("./sz.pdf")

@@ -49,7 +49,7 @@ for n in eachindex(T)
                    bfield(N, Δt, J, noise),
                    bfield(N, Δt, J, noise)];
         sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat);
-        s[i, :] = mean(sol, dims=2)
+        s[i, :] = mean(Array(sol), dims=2)
     end
     Sss[n, :] = mean(s, dims=1)
     next!(progress)

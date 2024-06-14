@@ -35,21 +35,21 @@ navg = 10
 println("Starting...")
 
 progress = Progress(navg);
-solx = zeros(navg, length(saveat), 3*nosc)
-solp = zeros(navg, length(saveat), 3*nosc)
+solx = zeros(navg, 3*nosc, length(saveat))
+solp = zeros(navg, 3*nosc, length(saveat))
 
 Threads.@threads for i in 1:navg
     bfields = [bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise)];
     sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
-    solx[i, :, :] = transpose(sol[1:3*nosc, :])
-    solp[i, :, :] = transpose(sol[1+3*nosc:6*nosc, :])
+    solx[i, :, :] = Array(sol)[1:3*nosc, :]
+    solp[i, :, :] = Array(sol)[1+3*nosc:6*nosc, :]
     next!(progress)
 end
 
-solavgx = mean(solx, dims=1)[1, :, :];
-solavgp = mean(solp, dims=1)[1, :, :];
+solavgx = dropdims(mean(solx, dims=1), dims=1);
+solavgp = dropdims(mean(solp, dims=1), dims=1);
 
 ########################
 ########################
@@ -61,29 +61,29 @@ npzwrite("./dynamics.npz", Dict("t" => saveat,
 
 ### Save data CSV ###
 dataframe = DataFrame(t = saveat,
-                      xx = solavgx[:, 1],
-                      xy = solavgx[:, 2],
-                      xz = solavgx[:, 3],
-                      px = solavgp[:, 1],
-                      py = solavgp[:, 2],
-                      pz = solavgp[:, 3])
+                      xx = solavgx[1, :],
+                      xy = solavgx[2, :],
+                      xz = solavgx[3, :],
+                      px = solavgp[1, :],
+                      py = solavgp[2, :],
+                      pz = solavgp[3, :])
 CSV.write("./dynamics.csv", dataframe)
 
 ### Plots ###
-plot(saveat, solavgx[:, 1], xlabel="t", ylabel="x_x")
+plot(saveat, solavgx[1, :], xlabel="t", ylabel="x_x")
 savefig("./xx.pdf")
 
-plot(saveat, solavgx[:, 2], xlabel="t", ylabel="x_y")
+plot(saveat, solavgx[2, :], xlabel="t", ylabel="x_y")
 savefig("./xy.pdf")
 
-plot(saveat, solavgx[:, 3], xlabel="t", ylabel="x_z")
+plot(saveat, solavgx[3, :], xlabel="t", ylabel="x_z")
 savefig("./xz.pdf")
 
-plot(saveat, solavgp[:, 1], xlabel="t", ylabel="p_x")
+plot(saveat, solavgp[1, :], xlabel="t", ylabel="p_x")
 savefig("./px.pdf")
 
-plot(saveat, solavgp[:, 2], xlabel="t", ylabel="p_y")
+plot(saveat, solavgp[2, :], xlabel="t", ylabel="p_y")
 savefig("./py.pdf")
 
-plot(saveat, solavgp[:, 3], xlabel="t", ylabel="p_z")
+plot(saveat, solavgp[3, :], xlabel="t", ylabel="p_z")
 savefig("./pz.pdf")
