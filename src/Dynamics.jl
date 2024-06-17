@@ -23,10 +23,12 @@ and global (shared by all spins) stochastic noise from the environment.
 
 Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
+Note: Additional keyword arguments will be passed on to the ODE solver (see the `DifferentialEquations.jl` docs)
+
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3, kwargs...)
     N = div(length(s0), 3)
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
@@ -87,7 +89,7 @@ function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling:
     else
         save_idxs = 1:3*N
     end
-    sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat; skwargs...)
+    sol = solve(prob, alg; abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat, kwargs..., skwargs...)
     return sol
 end
 
@@ -115,18 +117,20 @@ or global (shared by all spins) stochastic noise from the environment.
 
 Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
+Note: Additional keyword arguments will be passed on to the ODE solver (see the `DifferentialEquations.jl` docs)
+
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(s0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=true, alg=Tsit5(), atol=1e-3, rtol=1e-3, kwargs...)
     N = div(length(s0), 3)
     if length(bfield) == N && length(bfield[1]) == 3 # only local baths
         Jlist = repeat([J], N)
         bcoupling = [I(N)[i,:] for i in 1:N]
         matrix = repeat([matrix], N)
-        return diffeqsolver(s0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, save_fields=save_fields, projection=projection, alg=alg, atol=atol, rtol=rtol)
+        return diffeqsolver(s0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, S0=S0, Bext=Bext, saveat=saveat, save_fields=save_fields, projection=projection, alg=alg, atol=atol, rtol=rtol, kwargs...)
     else # only shared bath
-        return diffeqsolver(s0, tspan, [J], [bfield], [ones(N)], [matrix]; JH=JH, S0=S0, Bext=Bext, saveat=saveat, save_fields=save_fields, projection=projection, alg=alg, atol=atol, rtol=rtol)
+        return diffeqsolver(s0, tspan, [J], [bfield], [ones(N)], [matrix]; JH=JH, S0=S0, Bext=Bext, saveat=saveat, save_fields=save_fields, projection=projection, alg=alg, atol=atol, rtol=rtol, kwargs...)
     end
 end
 
@@ -155,11 +159,13 @@ and global (shared by all oscillators) stochastic noise from the environment.
 
 Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
+Note: Additional keyword arguments will be passed on to the ODE solver (see the `DifferentialEquations.jl` docs)
+
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
 
-function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3, kwargs...)
     N = div(length(x0), 3)
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
@@ -216,7 +222,7 @@ function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupl
         save_idxs = 1:6*N
     end
     prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N,3))))
-    sol = solve(prob, alg, abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat)
+    sol = solve(prob, alg; abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat, kwargs...)
     return sol
 end
 
@@ -244,17 +250,19 @@ or global (shared by all oscillators) stochastic noise from the environment.
 
 Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
+Note: Additional keyword arguments will be passed on to the ODE solver (see the `DifferentialEquations.jl` docs)
+
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3)
+function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3, kwargs...)
     N = div(length(x0), 3)
     if length(bfield) == N && length(bfield[1]) == 3 # only local baths
         Jlist = repeat([J], N)
         bcoupling = [I(N)[i,:] for i in 1:N]
         matrix = repeat([matrix], N)
-        return diffeqsolver(x0, p0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, Ω=Ω, counter_term=counter_term, saveat=saveat, save_fields=save_fields, alg=alg, atol=atol, rtol=rtol)
+        return diffeqsolver(x0, p0, tspan, Jlist, bfield, bcoupling, matrix; JH=JH, Ω=Ω, counter_term=counter_term, saveat=saveat, save_fields=save_fields, alg=alg, atol=atol, rtol=rtol, kwargs...)
     else # only shared bath
-        return diffeqsolver(x0, p0, tspan, [J], [bfield], [ones(N)], [matrix]; JH=JH, Ω=Ω, counter_term=counter_term, saveat=saveat, save_fields=save_fields, alg=alg, atol=atol, rtol=rtol)
+        return diffeqsolver(x0, p0, tspan, [J], [bfield], [ones(N)], [matrix]; JH=JH, Ω=Ω, counter_term=counter_term, saveat=saveat, save_fields=save_fields, alg=alg, atol=atol, rtol=rtol, kwargs...)
     end
 end
