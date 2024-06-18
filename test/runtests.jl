@@ -103,10 +103,10 @@ using Test
             bfields = [bfield(N, Δt, J, cl_noise), bfield(N, Δt, J, cl_noise), bfield(N, Δt, J, cl_noise)];
         
             s0 = normalize(rand(3))
-            sol = diffeqsolver(s0, tspan, J, bfields, Cw; saveat=saveat, alg=Tsit5(), atol=1e-5, rtol=1e-5);
+            sol = diffeqsolver(s0, tspan, J, bfields, Cw; saveat=saveat, alg=Vern7(), atol=1e-8, rtol=1e-8);
             sdynss = mean(Array(sol), dims=2)
 
-            @test isapprox(sdynss[:,end], [-0.53567, -0.11054, 0.81484], atol=1e-5)
+            @test isapprox(sdynss[:,end], [-0.535859, -0.109671, 0.814815], atol=1e-5)
         end
     end
 end
