@@ -3,10 +3,25 @@
 
 An abstract type used to represent different kinds of environment noise.
 
-Any user-defined subtype of `Noise` should implement a method `noise(::NoiseSubType)`
-which should return a function that represent the spectrum of the noise.
+Any user-defined subtype of `Noise` should implement a method `spectrum(::NoiseSubType, ω)`
+which returns the spectrum of the noise at the given frequency ω.
 """
 abstract type Noise end
+
+(n::Noise)(ω) = spectrum(n, ω)
+
+"""
+    spectrum(::Noise)
+
+Return the spectrum of the given noise as a function of frequency.
+
+# Arguments
+- `n::Noise`: The noise type.
+
+# Returns
+A function that takes a frequency `ω` and returns the corresponding spectrum value.
+"""
+spectrum(n::NT) where NT <: Noise = ω -> spectrum(n, ω)
 
 """
     struct ClassicalNoise{TT<:Real} <: Noise
@@ -56,49 +71,19 @@ end
 
 # Returns the classical noise at temperature `n.T` as a function of `ω`. The conditional
 # statement makes sure the function does not divide by zero in case of `ω==0`.
-"""
-    spectrum(n::ClassicalNoise)
 
-Construct the spectrum of [`ClassicalNoise`](@ref) at a given frequency.
-
-# Arguments
-- `n::ClassicalNoise`: The classical noise.
-
-# Returns
-A function that takes a frequency `ω` and returns the corresponding spectrum value.
-"""
-spectrum(n::ClassicalNoise) = ω -> iszero(ω) ? zero(ω) : 2*n.T/ω
+spectrum(n::ClassicalNoise, ω) = iszero(ω) ? zero(ω) : 2*n.T/ω
 
 # Returns the quantum noise at temperature `n.T` as a function of `ω`. The conditional
 # statement makes sure the function does not divide by zero in case of `ω==0`.
-"""
-    spectrum(n::QuantumNoise)
 
-Construct the spectrum of [`QuantumNoise`](@ref) at a given frequency.
-
-# Arguments
-- `n::QuantumNoise`: The quantum noise.
-
-# Returns
-A function that takes a frequency `ω` and returns the corresponding spectrum value.
-"""
-spectrum(n::QuantumNoise) = ω -> iszero(n.T) ? sign(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2))
+spectrum(n::QuantumNoise, ω) = iszero(n.T) ? sign(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2))
 
 # Returns the quantum noise at temperature `n.T` as a function of `ω`. The conditional
 # statement makes sure the function does not divide by zero in case of `ω==0`. It differs
 # from `spectrum(n::QuantumNoise)` in the fact that the zero-point noise is removed.
-"""
-    spectrum(n::NoZeroQuantumNoise)
 
-Construct the spectrum of [`NoZeroQuantumNoise`](@ref) at a given frequency.
-
-# Arguments
-- `n::NoZeroQuantumNoise`: The no-zero-point-fluctuations quantum noise.
-
-# Returns
-A function that takes a frequency `ω` and returns the corresponding spectrum value.
-"""
-spectrum(n::NoZeroQuantumNoise) = ω -> iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2) - sign(ω))
+spectrum(n::NoZeroQuantumNoise, ω) = iszero(n.T) ? zero(ω) : (iszero(ω) ? zero(ω) : coth(ω/n.T/2) - sign(ω))
 
 """
     function psd(J::AbstractSD, noise::Noise)
@@ -116,8 +101,7 @@ Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl
 A function `psd(ω)` that calculates the PSD at a given frequency `ω`.
 """
 function psd(J::AbstractSD, noise::Noise)
-    n = spectrum(noise)
-    psd(ω) = imag_memory_kernel_ft(J,ω)*n(ω)
+    psd(ω) = imag_memory_kernel_ft(J, ω)*noise(ω)
     return psd
 end
 
