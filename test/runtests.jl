@@ -108,5 +108,46 @@ using Test
 
             @test isapprox(sdynss[:,end], [-0.535859, -0.109671, 0.814815], atol=1e-5)
         end
+    
+        @testset "Classical single spin steady state" begin
+            sz_clgibbs(T) = -(coth(1/T) - T)
+
+            tstr, tend = 50, 200
+            Δt = 0.5
+            tspan = (0., tend)
+            saveat = tstr:Δt:tend
+
+            α, ω0, Γ = 1, 2, 3
+            J = LorentzianSD(α, ω0, Γ);
+            matrix = IsoCoupling(1);
+
+            T = 10 .^ LinRange(-2, 2, 5);
+
+            navg = 200
+            s0 = normalize([0.1, 0.0, -1.0]);
+
+            # although the results being tested here should be independent of
+            # the random seed, we set it to a fixed value for reproducibility,
+            # especially given the low number of samples used to speed up the
+            # testing
+            Random.seed!(2827465)
+
+            for n in eachindex(T)
+                noise = ClassicalNoise(T[n]);
+                s = zeros(navg, 3)
+                for i in 1:navg
+                    bfields = [bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise),
+                               bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise),
+                               bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise)];
+                    sol = diffeqsolver(s0, tspan, J, bfields, matrix; saveat=saveat, alg=Vern7(), atol=1e-6, rtol=1e-6);
+                    s[i, :] = mean(Array(sol), dims=2)
+                end
+                Sss = mean(s, dims=1)
+
+                @test isapprox(Sss[1], 0, atol=1e-2)
+                @test isapprox(Sss[2], 0, atol=1e-2)
+                @test isapprox(Sss[3], sz_clgibbs(T[n]), atol=1e-2)
+            end
+        end
     end
 end
