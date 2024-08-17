@@ -103,14 +103,15 @@ using Test
             bfields = [bfield(N, Δt, J, cl_noise), bfield(N, Δt, J, cl_noise), bfield(N, Δt, J, cl_noise)];
         
             s0 = normalize(rand(3))
-            sol = diffeqsolver(s0, tspan, J, bfields, Cw; saveat=saveat, alg=Vern7(), atol=1e-8, rtol=1e-8);
+            sol = diffeqsolver(s0, tspan, J, bfields, Cw; S0=1, saveat=saveat, alg=Vern7(), atol=1e-8, rtol=1e-8);
             sdynss = mean(Array(sol), dims=2)
 
             @test isapprox(sdynss[:,end], [-0.535859, -0.109671, 0.814815], atol=1e-5)
         end
     
         @testset "Classical single spin steady state" begin
-            sz_clgibbs(T) = -(coth(1/T) - T)
+            S0 = 1/2
+            sz_clgibbs(T) = -(coth(S0/T) - T/S0)
 
             tstr, tend = 50, 200
             Δt = 0.5

@@ -35,11 +35,12 @@ function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling:
     end
     M = length(Jlist)
     u0 = [s0; zeros(6*M)]
+    invsqrtS0 = 1/sqrt(S0)
     Cω2 = []
     b = []
     for i in 1:M
         push!(Cω2, matrix[i].C*transpose(matrix[i].C))
-        push!(b, t -> matrix[i].C*[bfield[i][1](t), bfield[i][2](t), bfield[i][3](t)]);
+        push!(b, t -> invsqrtS0*matrix[i].C*[bfield[i][1](t), bfield[i][2](t), bfield[i][3](t)]);
     end
     function f(du, u, (Cω2v, Beff), t)
         Cω2v = get_tmp(Cω2v, u)
