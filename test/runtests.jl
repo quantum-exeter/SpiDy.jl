@@ -110,8 +110,7 @@ using Test
         end
     
         @testset "Classical single spin steady state" begin
-            S0 = 1/2
-            sz_clgibbs(T) = -(coth(S0/T) - T/S0)
+            sz_clgibbs(S0, T) = -(coth(S0/T) - T/S0)
 
             tstr, tend = 50, 200
             Δt = 0.5
@@ -133,21 +132,26 @@ using Test
             # testing
             Random.seed!(2827465)
 
-            for n in eachindex(T)
-                noise = ClassicalNoise(T[n]);
-                s = zeros(navg, 3)
-                for i in 1:navg
-                    bfields = [bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise),
-                               bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise),
-                               bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise)];
-                    sol = diffeqsolver(s0, tspan, J, bfields, matrix; saveat=saveat, alg=Vern7(), atol=1e-6, rtol=1e-6);
-                    s[i, :] = mean(Array(sol), dims=2)
-                end
-                Sss = mean(s, dims=1)
+            for S0 in [1/2, 1, 3/2, 2]
+                for n in eachindex(T)
+                    noise = ClassicalNoise(T[n]/S0);
+                    s = zeros(navg, 3)
+                    for i in 1:navg
+                        bfields = [bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise),
+                                bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise),
+                                bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise)];
+                        sol = diffeqsolver(s0, tspan, J, bfields, matrix; S0=S0, saveat=saveat, alg=Vern7(), atol=1e-6, rtol=1e-6);
+                        s[i, :] = mean(Array(sol), dims=2)
+                    end
+                    Sss = mean(s, dims=1)
 
-                @test isapprox(Sss[1], 0, atol=1e-2)
-                @test isapprox(Sss[2], 0, atol=1e-2)
-                @test isapprox(Sss[3], sz_clgibbs(T[n]), atol=1e-2)
+                    if !isapprox(Sss[3], sz_clgibbs(S0, T[n]/S0), atol=1e-2)
+                        println("filed with: S0 = $S0, T = $(T[n])")
+                    end
+                    @test isapprox(Sss[1], 0, atol=1e-2)
+                    @test isapprox(Sss[2], 0, atol=1e-2)
+                    @test isapprox(Sss[3], sz_clgibbs(S0, T[n]/S0), atol=1e-2)
+                end
             end
         end
     end
