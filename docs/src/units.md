@@ -10,7 +10,7 @@ how to appropriately choose the parameters that the library takes as input.
 SpiDy.jl is designed to implement the equations of spins in presence of a bath
 of harmonic oscillators with Lorentzian spectral density, as derived in
 **[NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2)**, which
-*for a single spin ``\mathbf{S}`` in presence of an external field
+for a single spin ``\mathbf{S}`` in presence of an external field
 ``\mathbf{B}_\mathrm{ext}`` read
 ```math
 \frac{\mathrm{d}\mathbf{S}}{\mathrm{d}t} =
