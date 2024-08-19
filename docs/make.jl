@@ -14,6 +14,7 @@ makedocs(;
         assets=String[],
     ),
     pages = ["Start with SpiDy.jl" => "index.md",
+             "Units and parameter choice" => "units.md",
              "Noise" => "noise.md",
              "Spectral density" => "spectraldensity.md",
              "Stochastic field" => "stochasticfield.md",
