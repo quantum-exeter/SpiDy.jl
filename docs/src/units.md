@@ -8,13 +8,27 @@ how to appropriately choose the parameters that the library takes as input.
 ### Equations of motion
 
 SpiDy.jl is designed to implement the equations of spins in presence of a bath
-of harmonic oscillators with Lorentzian spectral density, as derived in
+of harmonic oscillators as derived in
 **[NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2)**, which
 for a single spin ``\mathbf{S}`` in presence of an external field
 ``\mathbf{B}_\mathrm{ext}`` read
 ```math
 \frac{\mathrm{d}\mathbf{S}}{\mathrm{d}t} =
-    \gamma\mathbf{S}\times\left(\mathbf{S}_\mathrm{ext} + \mathbf{b} + \mathbf{V}\right), \\
+    \gamma\mathbf{S}\times\left(\mathbf{B}_\mathrm{ext} + \mathbf{b}(t) + \mathbf{V}(t)\right),
+```
+where $\gamma_e$ is the electron gyromagnetic ratio, ``b(t)`` is the environment
+induced thermal stochastic field, and
+```math
+\mathbf{V}(t) = \gamma \int_{-\infty}^{t}\mathrm{d}t' \, \mathbf{K}(t-t')\mathbf{S}(t'),
+```
+where ``\mathbf{K}(\tau)`` is a memory kernel accounting for the non-Markovian
+evolution of the spin (see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2)
+for more details).
+SpiDy focuses on the case of an environment with a Lorentzian spectral density,
+in which case these equations of motion can be rewritten as
+```math
+\frac{\mathrm{d}\mathbf{S}}{\mathrm{d}t} =
+    \gamma\mathbf{S}\times\left(\mathbf{B}_\mathrm{ext} + \mathbf{b} + \mathbf{V}\right), \\
 \frac{\mathrm{d}\mathbf{V}}{\mathrm{d}t} = \mathbf{W}, \\
 \frac{\mathrm{d}\mathbf{W}}{\mathrm{d}t} = \gamma A \mathbf{S} - \omega_0^2\mathbf{V} - \Gamma\mathbf{W},
 ```
@@ -22,7 +36,7 @@ where ``A``, ``\omega_0``, and ``\Gamma`` parametrise the Lorentzian spectral de
 ```math
 J(\omega) = \frac{A\Gamma}{\pi} \frac{\omega}{(\omega_0^2 - \omega^2)^2 + \omega^2\Gamma^2},
 ```
-and the stochastic ``\mathbf{b}`` is given by
+and the thermal stochastic ``\mathbf{b}`` field is given by
 ```math
 \mathbf{b}(t) = \int_{-\infty}^{+\infty}\mathrm{d}t' F(t-t') \xi(t'),
 ```
@@ -31,11 +45,11 @@ with ``\xi`` being white noise and
 F(\tau) = \frac{1}{2\pi}\int_{-\infty}^{+\infty}\mathrm{d}\omega
     e^{-i\omega\tau} \sqrt{P(\omega)}.
 ```
-Here, ``P(\omega)`` is the power spectral density of the environment and it is
+Here, ``P(\omega)`` is the power spectral density of the environment, and it is
 given in terms of the Lorentzian spectral density ``J(\omega)`` and the
 environment thermal noise ``N(\omega)`` by ``P(\omega) = \hbar\pi J(\omega)
-N(\omega)``. The noise ``N(\omega)`` can be classical, `quantum`, or `quantum` with
-no zero point fluctuations. For example, for the `quantum` case we have
+N(\omega)``. The noise ``N(\omega)`` can be classical, "quantum", or "quantum" with
+no zero point fluctuations. For example, for the "quantum" case we have
 ```math
 N_\mathrm{qu}(\omega) = \coth\left(\frac{\hbar\omega}{2k_\mathrm{B}T}\right).
 ```
@@ -60,8 +74,8 @@ parameters:
 - ``\bar{t}_\mathrm{end}``: final time of the evolution.
 - ``\mathrm{d}\bar{t}``: time differential.
 - ``\bar{\omega}_0``: peak frequency of the Lorentzian spectral density.
-- ``\bar{\Gamma}``: with of the Lorentzian spectral density.
-- ``\bar{\alpha}``: amplitude of the Lorentzian density.
+- ``\bar{\Gamma}``: width of the Lorentzian spectral density.
+- ``\bar{\alpha}``: amplitude of the Lorentzian spectral density.
 - ``\bar{T}``: the environment temperature.
 
 These quantities are related to the unitful units in the previous section by the
@@ -80,6 +94,7 @@ T &= \frac{\hbar\omega_\mathrm{L}}{k_\mathrm{B}} \, \bar{T}.
 ```
 
 With these definitions, the unit-free Gilbert damping is given by
+(see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2))
 ```math
 \eta = \frac{\bar{\alpha}\bar{\Gamma}}{\bar{\omega}_0^4}.
 ```
