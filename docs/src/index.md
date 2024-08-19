@@ -1,6 +1,7 @@
 # SpiDy.jl documentation
 ```@contents
 pages = ["Start with SpiDy.jl" => "index.md",
+         "Units and parameter choice" => "units.md",
          "Noise" => "noise.md",
          "Spectral density" => "spectraldensity.md",
          "Stochastic field" => "stochasticfield.md",
@@ -49,6 +50,11 @@ NB: the code can exploit parallel computation. To do this, run your files as
 julia -t 6 "path-to-your-file"/run_dynamics.jl
 ```
 where you want to replace "6" with the number of threads that you wish to use. As a general idea, you do not want to use more than 80% of the number of threads you have available in your machine, e.g. if you have a 4-core CPU, you are likely to have 8 threads and you may want to run the parallelization as indicated above.
+
+## Units and choosing parameters
+
+See the section *"Units and choosing parameters"* for a discussion on the choice of units
+implemented in SpiDy.jl and how to choose these parameters given a concrete real problem.
 
 ## Index
 ```@index
