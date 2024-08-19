@@ -14,12 +14,12 @@ for a single spin ``\mathbf{S}`` in presence of an external field
 ``\mathbf{B}_\mathrm{ext}`` read
 ```math
 \frac{\mathrm{d}\mathbf{S}}{\mathrm{d}t} =
-    \gamma\mathbf{S}\times\left(\mathbf{B}_\mathrm{ext} + \mathbf{b}(t) + \mathbf{V}(t)\right),
+    \gamma_e\mathbf{S}\times\left(\mathbf{B}_\mathrm{ext} + \mathbf{b}(t) + \mathbf{V}(t)\right),
 ```
 where $\gamma_e$ is the electron gyromagnetic ratio, ``b(t)`` is the environment
 induced thermal stochastic field, and
 ```math
-\mathbf{V}(t) = \gamma \int_{-\infty}^{t}\mathrm{d}t' \, \mathbf{K}(t-t')\mathbf{S}(t'),
+\mathbf{V}(t) = \gamma_e\int_{-\infty}^{t}\mathrm{d}t' \, \mathbf{K}(t-t')\mathbf{S}(t'),
 ```
 where ``\mathbf{K}(\tau)`` is a memory kernel accounting for the non-Markovian
 evolution of the spin (see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2)
@@ -28,9 +28,9 @@ SpiDy focuses on the case of an environment with a Lorentzian spectral density,
 in which case these equations of motion can be rewritten as
 ```math
 \frac{\mathrm{d}\mathbf{S}}{\mathrm{d}t} =
-    \gamma\mathbf{S}\times\left(\mathbf{B}_\mathrm{ext} + \mathbf{b} + \mathbf{V}\right), \\
+    \gamma_e\mathbf{S}\times\left(\mathbf{B}_\mathrm{ext} + \mathbf{b} + \mathbf{V}\right), \\
 \frac{\mathrm{d}\mathbf{V}}{\mathrm{d}t} = \mathbf{W}, \\
-\frac{\mathrm{d}\mathbf{W}}{\mathrm{d}t} = \gamma A \mathbf{S} - \omega_0^2\mathbf{V} - \Gamma\mathbf{W},
+\frac{\mathrm{d}\mathbf{W}}{\mathrm{d}t} = \gamma_e A \mathbf{S} - \omega_0^2\mathbf{V} - \Gamma\mathbf{W},
 ```
 where ``A``, ``\omega_0``, and ``\Gamma`` parametrise the Lorentzian spectral density as
 ```math
