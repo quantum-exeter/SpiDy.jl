@@ -78,8 +78,8 @@ parameters:
 - ``\bar{\alpha}``: amplitude of the Lorentzian spectral density.
 - ``\bar{T}``: the environment temperature.
 
-These quantities are related to the unitful units in the previous section by the
-following conversions:
+These unit-free quantities are related to the unitful quantities in the previous
+section by the following conversions:
 ```math
 \begin{align}
 \mathbf{B}_\mathrm{ext} &= B_0 \, \bar{B}_\mathrm{ext}, \\
@@ -99,19 +99,19 @@ With these definitions, the unit-free Gilbert damping is given by
 \eta = \frac{\bar{\alpha}\bar{\Gamma}}{\bar{\omega}_0^4}.
 ```
 
-!!! warning "Units convetion in old versions of SpiDy.jl"
+!!! warning "Units convention in old versions of SpiDy.jl"
     Note that the unit conversion just explained, in line with
     **[NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2)**,
-    is correct for SpiDy.jl versions 1.2.0 and up.
+    is correct for SpiDy.jl versions 1.2.0 and later.
 
     Older version of SpiDy.jl used a different convention, which unfortunately
     ment that a change of spin length ``S_0`` implied a change in temperature and
-    time-scale, therefore requiring redefinig the paramerts of the Loretnzian,
-    evolution time, etc.
+    time-scale, therefore requiring redefinig the temperature, the paramerts of
+    the Loretnzian, evolution time, etc.
     
-    The change in units convetion means that versions of SpiDy.jl before and
-    after 1.2.0 will produce different results. This breaking change was made to
-    bring the code into consistency with the article
+    The **change in units** convetion means that versions of SpiDy.jl before and
+    after 1.2.0 will produce **different results**. This breaking change was
+    made to bring the code into consistency with the article
     **[NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2)** and
     to make the mapping of parameters used in SpiDy.jl to real units much easier
     and more straightforward (see also next section).
