@@ -27,10 +27,12 @@ for more details).
 SpiDy focuses on the case of an environment with a Lorentzian spectral density,
 in which case these equations of motion can be rewritten as
 ```math
-\frac{\mathrm{d}\mathbf{S}}{\mathrm{d}t} =
+\begin{align}
+\frac{\mathrm{d}\mathbf{S}}{\mathrm{d}t} &=
     \gamma_e\mathbf{S}\times\left(\mathbf{B}_\mathrm{ext} + \mathbf{b} + \mathbf{V}\right), \\
-\frac{\mathrm{d}\mathbf{V}}{\mathrm{d}t} = \mathbf{W}, \\
-\frac{\mathrm{d}\mathbf{W}}{\mathrm{d}t} = \gamma_e A \mathbf{S} - \omega_0^2\mathbf{V} - \Gamma\mathbf{W},
+\frac{\mathrm{d}\mathbf{V}}{\mathrm{d}t} &= \mathbf{W}, \\
+\frac{\mathrm{d}\mathbf{W}}{\mathrm{d}t} &= \gamma_e A \mathbf{S} - \omega_0^2\mathbf{V} - \Gamma\mathbf{W},
+\end{align}
 ```
 where ``A``, ``\omega_0``, and ``\Gamma`` parametrise the Lorentzian spectral density as
 ```math
@@ -60,8 +62,8 @@ Note that in these equations above, all quantities have standard units.
 
 SpiDy.jl implements these equations in a unit-free way, following the
 conventions of **[NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2)**.
-In summary, suppose a spin of length ``\hbar S_0`` is in presence of a magnetic
-field of magnitude ``B_0``. We define the Larmor frequency
+In summary, consider a spin of length ``\hbar S_0`` is in presence of a
+reference magnetic field of magnitude ``B_0``. We then define the Larmor frequency
 ```math
 \omega_\mathrm{L} = |\gamma_e| B_0,
 ```
@@ -97,10 +99,12 @@ Given these choices of rescaling and adimensionalisation and plugging them in
 the equations of motion of the previous section, one finally gets the equations
 being solved by SpiDy, that is
 ```math
-\frac{\mathrm{d}\bar{\mathbf{S}}}{\mathrm{d}\bar{t}} =
+\begin{align}
+\frac{\mathrm{d}\bar{\mathbf{S}}}{\mathrm{d}\bar{t}} &=
     \bar{\mathbf{S}}\times\left(\bar{\mathbf{B}}_\mathrm{ext} + \frac{1}{\sqrt{S_0}}\bar{\mathbf{b}} + \bar{\mathbf{V}}\right), \\
-\frac{\mathrm{d}\bar{\mathbf{V}}}{\mathrm{d}\bar{t}} = \bar{\mathbf{W}}, \\
-\frac{\mathrm{d}\bar{\mathbf{W}}}{\mathrm{d}\bar{t}} = \bar{\alpha}\bar{\mathbf{S}} - \bar{\omega}_0^2\bar{\mathbf{V}} - \bar{\Gamma}\bar{\mathbf{W}},
+\frac{\mathrm{d}\bar{\mathbf{V}}}{\mathrm{d}\bar{t}} &= \bar{\mathbf{W}}, \\
+\frac{\mathrm{d}\bar{\mathbf{W}}}{\mathrm{d}\bar{t}} &= \bar{\alpha}\bar{\mathbf{S}} - \bar{\omega}_0^2\bar{\mathbf{V}} - \bar{\Gamma}\bar{\mathbf{W}},
+\end{align}
 ```
 with environment Lorentzian spectral density
 ```math
@@ -119,8 +123,8 @@ while for "classical" noise we have
 \bar{N}_\mathrm{cl}(\bar{\omega}) = \frac{2\bar{T}}{\bar{\omega}}.
 ```
 
-Finally, note that these definitions above, the unit-free Gilbert damping is
-given by (see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2))
+Finally, note that with these definitions above, the unit-free Gilbert damping
+is given by (see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2))
 ```math
 \eta = \frac{\bar{\alpha}\bar{\Gamma}}{\bar{\omega}_0^4}.
 ```
