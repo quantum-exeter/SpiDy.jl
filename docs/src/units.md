@@ -131,8 +131,8 @@ given by (see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef
     is correct for SpiDy.jl versions 1.2.0 and later.
 
     Older version of SpiDy.jl used a different convention, which unfortunately
-    ment that a change of spin length ``S_0`` implied a change in temperature and
-    time-scale, therefore requiring redefinig the temperature, the paramerts of
+    meant that a change of spin length ``S_0`` implied a change in temperature and
+    time-scale, therefore requiring redefining the temperature, the paramerts of
     the Loretnzian, evolution time, etc.
     
     The **change in units** convetion means that versions of SpiDy.jl before and
