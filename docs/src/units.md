@@ -152,4 +152,4 @@ is given by (see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac
 
 ## Extracting Lorentzian units from experimental data
 
-To be written.
+To be written. See also **[EPL 139 36002 (2022)](https://doi.org/10.1209/0295-5075/ac7b42)**.
