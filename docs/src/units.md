@@ -78,8 +78,8 @@ parameters:
 - ``\bar{\alpha}``: amplitude of the Lorentzian spectral density.
 - ``\bar{T}``: the environment temperature.
 
-These unit-free quantities are related to the unitful quantities in the previous
-section by the following conversions:
+These unit-free quantities (denoted hereon by a bar on top) are related to the
+unitful quantities in the previous section by the following conversions:
 ```math
 \begin{align}
 \mathbf{B}_\mathrm{ext} &= B_0 \, \bar{B}_\mathrm{ext}, \\
@@ -93,8 +93,34 @@ T &= \frac{\hbar\omega_\mathrm{L}}{k_\mathrm{B}} \, \bar{T}.
 \end{align}
 ```
 
-With these definitions, the unit-free Gilbert damping is given by
-(see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2))
+Given these choices of rescaling and adimensionalisation and plugging them in
+the equations of motion of the previous section, one finally gets the equations
+being solved by SpiDy, that is
+```math
+\frac{\mathrm{d}\bar{\mathbf{S}}}{\mathrm{d}\bar{t}} =
+    \bar{\mathbf{S}}\times\left(\bar{\mathbf{B}}_\mathrm{ext} + \frac{1}{\sqrt{S_0}}\bar{\mathbf{b}} + \bar{\mathbf{V}}\right), \\
+\frac{\mathrm{d}\bar{\mathbf{V}}}{\mathrm{d}\bar{t}} = \bar{\mathbf{W}}, \\
+\frac{\mathrm{d}\bar{\mathbf{W}}}{\mathrm{d}\bar{t}} = \bar{\alpha}\bar{\mathbf{S}} - \bar{\omega}_0^2\bar{\mathbf{V}} - \bar{\Gamma}\bar{\mathbf{W}},
+```
+with environment Lorentzian spectral density
+```math
+\bar{J}(\bar{\omega}) = \frac{\bar{\alpha}\bar{\Gamma}}{\pi} \frac{\bar{\omega}}{(\bar{\omega}_0^2 - \bar{\omega}^2)^2 + \bar{\omega}^2\bar{\Gamma}^2},
+```
+and thermal stochastic noise $\bar{\mathbf{b}}$ with power spectral density 
+```math
+\bar{P}(\bar{\omega}) = \pi \bar{J}(\bar{\omega})\bar{N}(\bar{\omega}).
+```
+For the "quantum" noise, the noise term is given by
+```math
+\bar{N}_\mathrm{qu}(\bar{\omega}) = \coth\left(\frac{\bar{\omega}}{2\bar{T}}\right),
+```
+while for "classical" noise we have
+```math
+\bar{N}_\mathrm{cl}(\bar{\omega}) = \frac{2\bar{T}}{\bar{\omega}}.
+```
+
+Finally, note that these definitions above, the unit-free Gilbert damping is
+given by (see [NJP 24 033020 (2022)](https://www.doi.org/10.1088/1367-2630/ac4ef2))
 ```math
 \eta = \frac{\bar{\alpha}\bar{\Gamma}}{\bar{\omega}_0^4}.
 ```
