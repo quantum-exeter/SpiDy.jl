@@ -105,4 +105,8 @@ function psd(J::AbstractSD, noise::Noise)
     return psd
 end
 
-psd(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*J.α*J.Γ*noise.T/((J.ω0^2 - ω^2)^2 + (J.Γ*ω)^2)
+psd(J::LorentzianSD, noise::ClassicalNoise) = ω -> 2*noise.T*π*sdoverω(J, ω)
+
+psd(J::LorentzianSD, noise::QuantumNoise) = ω -> iszero(ω) ? 2*noise.T*π*sdoverω(J, 0) : π*sd(J, ω)*coth(ω/2/noise.T)
+
+psd(J::LorentzianSD, noise::NoZeroQuantumNoise) = ω -> iszero(ω) ? 2*noise.T*π*sdoverω(J, 0) : π*sd(J, ω)*(coth(ω/2/noise.T) - sign(ω))
