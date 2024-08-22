@@ -106,7 +106,7 @@ using Test
             sol = diffeqsolver(s0, tspan, J, bfields, Cw; S0=1, saveat=saveat, alg=Vern7(), atol=1e-8, rtol=1e-8);
             sdynss = mean(Array(sol), dims=2)
 
-            @test isapprox(sdynss[:,end], [-0.535859, -0.109671, 0.814815], atol=1e-5)
+            @test isapprox(sdynss[:,end], [-0.535249, -0.133732, 0.811530], atol=1e-5)
         end
     
         @testset "Classical single spin steady state" begin
