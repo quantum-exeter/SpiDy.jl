@@ -129,9 +129,9 @@ or global (shared by all spins) stochastic noise from the environment.
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
 - `save_fields=false`: (Optional) If true, also return the auxiliary fields encoding the environment memory.
 - `projection=false`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `false`.
-- `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
-- `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
-- `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
+- `alg=Vern6()`: (Optional) The differential equation solver algorithm. Default is `Vern6()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
+- `atol=1e-6`: (Optional) The absolute tolerance for the solver. Default is `1e-6`.
+- `rtol=1e-6`: (Optional) The relative tolerance for the solver. Default is `1e-6`.
 
 Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
@@ -152,9 +152,9 @@ function diffeqsolver(
     saveat=[],
     save_fields=false,
     projection=false,
-    alg=Tsit5(),
-    atol=1e-3,
-    rtol=1e-3,
+    alg=Vern6(),
+    atol=1e-6,
+    rtol=1e-6,
     kwargs...
 )
     N = div(length(s0), 3)
@@ -187,9 +187,9 @@ and global (shared by all oscillators) stochastic noise from the environment.
 - `counter_term=true`: (Optional) Whether to include the counter-term or not. Default is true.
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
 - `save_fields=false`: (Optional) If true, also return the auxiliary fields encoding the environment memory.
-- `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
-- `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
-- `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
+- `alg=Vern6()`: (Optional) The differential equation solver algorithm. Default is `Vern6()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
+- `atol=1e-6`: (Optional) The absolute tolerance for the solver. Default is `1e-6`.
+- `rtol=1e-6`: (Optional) The relative tolerance for the solver. Default is `1e-6`.
 
 Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
@@ -212,9 +212,9 @@ function diffeqsolver(
     counter_term=true,
     saveat=[],
     save_fields=false,
-    alg=Tsit5(),
-    atol=1e-3,
-    rtol=1e-3,
+    alg=Vern6(),
+    atol=1e-6,
+    rtol=1e-6,
     kwargs...
 )
     N = div(length(x0), 3)
@@ -273,7 +273,7 @@ function diffeqsolver(
         save_idxs = 1:6*N
     end
     prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N,3))))
-    sol = solve(prob, alg; abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat, kwargs...)
+    sol = solve(prob, alg; abstol=atol, reltol=rtol, maxiters=Int(1e9), save_idxs=save_idxs, saveat=saveat, kwargs...)
     return sol
 end
 
@@ -295,9 +295,9 @@ or global (shared by all oscillators) stochastic noise from the environment.
 - `counter_term=true`: (Optional) Whether to include the counter-term or not. Default is true.
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
 - `save_fields=false`: (Optional) If true, also return the auxiliary fields encoding the environment memory.
-- `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
-- `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
-- `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
+- `alg=Vern6()`: (Optional) The differential equation solver algorithm. Default is `Vern6()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
+- `atol=1e-6`: (Optional) The absolute tolerance for the solver. Default is `1e-6`.
+- `rtol=1e-6`: (Optional) The relative tolerance for the solver. Default is `1e-6`.
 
 Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
@@ -318,9 +318,9 @@ function diffeqsolver(
     counter_term=true,
     saveat=[],
     save_fields=false,
-    alg=Tsit5(),
-    atol=1e-3,
-    rtol=1e-3,
+    alg=Vern6(),
+    atol=1e-6,
+    rtol=1e-6,
     kwargs...
 )
     N = div(length(x0), 3)
