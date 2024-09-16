@@ -17,9 +17,9 @@ and global (shared by all spins) stochastic noise from the environment.
 - `saveat=[]`: (Optional) An array of time points where the solution should be saved. Default is empty, which saves the solution at the time steps chosen by the integration algorithm.
 - `save_fields=false`: (Optional) If true, also return the auxiliary fields encoding the environment memory.
 - `projection=false`: (Optional) Specifies whether to project the spin vectors onto the unit sphere at each time step, hence forcing the numerical conservation of the spin length. Default is `false`.
-- `alg=Tsit5()`: (Optional) The differential equation solver algorithm. Default is `Tsit5()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
-- `atol=1e-3`: (Optional) The absolute tolerance for the solver. Default is `1e-3`.
-- `rtol=1e-3`: (Optional) The relative tolerance for the solver. Default is `1e-3`.
+- `alg=Vern6()`: (Optional) The differential equation solver algorithm. Default is `Vern6()`. See the `DifferentialEquations.jl` docs for [choices](https://docs.sciml.ai/DiffEqDocs/stable/solvers/ode_solve/).
+- `atol=1e-6`: (Optional) The absolute tolerance for the solver. Default is `1e-6`.
+- `rtol=1e-6`: (Optional) The relative tolerance for the solver. Default is `1e-6`.
 
 Note: The [`LorentzianSD`](https://quantum-exeter.github.io/SpectralDensities.jl/stable/reference/#SpectralDensities.LorentzianSD) type is provided by the [SpectralDensities.jl](https://github.com/quantum-exeter/SpectralDensities.jl) package.
 
@@ -28,7 +28,7 @@ Note: Additional keyword arguments will be passed on to the ODE solver (see the 
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=false, alg=Tsit5(), atol=1e-3, rtol=1e-3, kwargs...)
+function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=false, alg=Vern6(), atol=1e-6, rtol=1e-6, kwargs...)
     N = div(length(s0), 3)
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
@@ -90,7 +90,7 @@ function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling:
     else
         save_idxs = 1:3*N
     end
-    sol = solve(prob, alg; abstol=atol, reltol=rtol, maxiters=Int(1e7), save_idxs=save_idxs, saveat=saveat, kwargs..., skwargs...)
+    sol = solve(prob, alg; abstol=atol, reltol=rtol, maxiters=Int(1e9), save_idxs=save_idxs, saveat=saveat, kwargs..., skwargs...)
     return sol
 end
 
