@@ -84,31 +84,39 @@ function _spin_time_step!(
 )
     Cω2v = get_tmp(Cω2v, u)
     Beff = get_tmp(Beff, u)
+
     s = @view u[1:3*N]
     v = @view u[1+3*N:3*N+3*M]
     w = @view u[1+3*N+3*M:3*N+6*M]
     ds = @view du[1:3*N]
     dv = @view du[1+3*N:3*N+3*M]
     dw = @view du[1+3*N+3*M:3*N+6*M]
+
     for i in 1:N
         Beff[i, :] .= Bext
+
         for j in 1:M
             Beff[i, :] .+= bcoupling[j][i]*(b[j](t) + mul!(Cω2v, Cω2[j], v[1+(j-1)*3:3+(j-1)*3]))
         end
     end
+
     for i in 1:N
         ds[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[i,3]-s[3+(i-1)*3]*Beff[i,2])
         ds[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[i,1]-s[1+(i-1)*3]*Beff[i,3])
         ds[3+(i-1)*3] = -(s[1+(i-1)*3]*Beff[i,2]-s[2+(i-1)*3]*Beff[i,1])
+
         for j in 1:N
             ds[1+(i-1)*3] += -(s[2+(i-1)*3]*JH[i,j]*s[3+(j-1)*3]-s[3+(i-1)*3]*JH[i,j]*s[2+(j-1)*3])
             ds[2+(i-1)*3] += -(s[3+(i-1)*3]*JH[i,j]*s[1+(j-1)*3]-s[1+(i-1)*3]*JH[i,j]*s[3+(j-1)*3])
             ds[3+(i-1)*3] += -(s[1+(i-1)*3]*JH[i,j]*s[2+(j-1)*3]-s[2+(i-1)*3]*JH[i,j]*s[1+(j-1)*3])
         end
     end
+
     dv .= w
+
     for i in 1:M
         dw[1+3*(i-1):3+3*(i-1)] = -(Jlist[i].ω0^2)*v[1+3*(i-1):3+3*(i-1)] -Jlist[i].Γ*w[1+3*(i-1):3+3*(i-1)]
+
         for j in 1:N
             dw[1+3*(i-1):3+3*(i-1)] += -Jlist[i].α*bcoupling[i][j]*s[1+3*(j-1):3+3*(j-1)]
         end
