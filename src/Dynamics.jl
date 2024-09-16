@@ -94,9 +94,13 @@ function _spin_time_step!(
 
     for i in 1:N
         Beff[i, :] .= Bext
+    end
 
-        for j in 1:M
-            Beff[i, :] .+= bcoupling[j][i]*(b[j](t) + mul!(Cω2v, Cω2[j], v[1+(j-1)*3:3+(j-1)*3]))
+    for j in 1:M
+        vj = @view v[1+(j-1)*3:3+(j-1)*3]
+
+        for i in 1:N
+            Beff[i, :] .+= bcoupling[j][i]*(b[j](t) + mul!(Cω2v, Cω2[j], vj))
         end
     end
 
@@ -115,10 +119,19 @@ function _spin_time_step!(
     dv .= w
 
     for i in 1:M
-        dw[1+3*(i-1):3+3*(i-1)] = -(Jlist[i].ω0^2)*v[1+3*(i-1):3+3*(i-1)] -Jlist[i].Γ*w[1+3*(i-1):3+3*(i-1)]
+        vi = @view v[1+(i-1)*3:3+(i-1)*3]
+        wi = @view w[1+(i-1)*3:3+(i-1)*3]
+
+        for k in 1:3
+            dw[k+3*(i-1)] = -(Jlist[i].ω0^2)*vi[k] -Jlist[i].Γ*wi[k]
+        end
 
         for j in 1:N
-            dw[1+3*(i-1):3+3*(i-1)] += -Jlist[i].α*bcoupling[i][j]*s[1+3*(j-1):3+3*(j-1)]
+            sj = @view s[1+3*(j-1):3+3*(j-1)]
+
+            for k in 1:3
+                dw[k+3*(i-1)] += -Jlist[i].α*bcoupling[i][j]*sj[k]
+            end
         end
     end
 end
