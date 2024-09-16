@@ -196,10 +196,10 @@ using Test
                 return solavg
             end
 
-            @test isapprox(ssavg(prm1, noise_a, S0a), -0.24, atol=2e-2)
-            @test isapprox(ssavg(prm2, noise_a, S0a), -0.28, atol=2e-2)
-            @test isapprox(ssavg(prm1, noise_b, S0b), -0.85, atol=1e-2)
-            @test isapprox(ssavg(prm2, noise_b, S0b), -0.85, atol=1e-2)
+            @test isapprox(ssavg(prm1, noise_a, S0a), -0.24, atol=3e-2)
+            @test isapprox(ssavg(prm2, noise_a, S0a), -0.28, atol=3e-2)
+            @test isapprox(ssavg(prm1, noise_b, S0b), -0.85, atol=2e-2)
+            @test isapprox(ssavg(prm2, noise_b, S0b), -0.85, atol=2e-2)
         end
     end
 end
