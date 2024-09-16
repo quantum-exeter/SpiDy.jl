@@ -119,14 +119,19 @@ function _spin_time_step!(
     end
 
     for i in 1:N
-        ds[1+(i-1)*3] = -(s[2+(i-1)*3]*Beff[i,3]-s[3+(i-1)*3]*Beff[i,2])
-        ds[2+(i-1)*3] = -(s[3+(i-1)*3]*Beff[i,1]-s[1+(i-1)*3]*Beff[i,3])
-        ds[3+(i-1)*3] = -(s[1+(i-1)*3]*Beff[i,2]-s[2+(i-1)*3]*Beff[i,1])
+        si = @view s[1+(i-1)*3:3+(i-1)*3]
+        dsi = @view ds[1+(i-1)*3:3+(i-1)*3]
+
+        dsi[1] = -(si[2]*Beff[i,3] - si[3]*Beff[i,2])
+        dsi[2] = -(si[3]*Beff[i,1] - si[1]*Beff[i,3])
+        dsi[3] = -(si[1]*Beff[i,2] - si[2]*Beff[i,1])
 
         for j in 1:N
-            ds[1+(i-1)*3] += -(s[2+(i-1)*3]*JH[i,j]*s[3+(j-1)*3]-s[3+(i-1)*3]*JH[i,j]*s[2+(j-1)*3])
-            ds[2+(i-1)*3] += -(s[3+(i-1)*3]*JH[i,j]*s[1+(j-1)*3]-s[1+(i-1)*3]*JH[i,j]*s[3+(j-1)*3])
-            ds[3+(i-1)*3] += -(s[1+(i-1)*3]*JH[i,j]*s[2+(j-1)*3]-s[2+(i-1)*3]*JH[i,j]*s[1+(j-1)*3])
+            sj = @view s[1+(j-1)*3:3+(j-1)*3]
+
+            dsi[1] += -(si[2]*JH[i,j]*sj[3] - si[3]*JH[i,j]*sj[2])
+            dsi[2] += -(si[3]*JH[i,j]*sj[1] - si[1]*JH[i,j]*sj[3])
+            dsi[3] += -(si[1]*JH[i,j]*sj[2] - si[2]*JH[i,j]*sj[1])
         end
     end
 
@@ -135,16 +140,17 @@ function _spin_time_step!(
     for i in 1:M
         vi = @view v[1+(i-1)*3:3+(i-1)*3]
         wi = @view w[1+(i-1)*3:3+(i-1)*3]
+        dwi = @view dw[1+(i-1)*3:3+(i-1)*3]
 
         for k in 1:3
-            dw[k+3*(i-1)] = -(Jlist[i].ω0^2)*vi[k] -Jlist[i].Γ*wi[k]
+            dwi[k] = -(Jlist[i].ω0^2)*vi[k] -Jlist[i].Γ*wi[k]
         end
 
         for j in 1:N
             sj = @view s[1+3*(j-1):3+3*(j-1)]
 
             for k in 1:3
-                dw[k+3*(i-1)] += -Jlist[i].α*bcoupling[i][j]*sj[k]
+                dwi[k] += -Jlist[i].α*bcoupling[i][j]*sj[k]
             end
         end
     end
