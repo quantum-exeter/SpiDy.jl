@@ -22,7 +22,14 @@ Note: The [`AbstractSD`](https://quantum-exeter.github.io/SpectralDensities.jl/s
 # Returns
 A time series of the stochastic field values.
 """
-function bfield(N, Δt, J::AbstractSD, noise::Noise; distro=Normal(0., 1/sqrt(Δt)), interpolation=true)
+function bfield(
+    N,
+    Δt,
+    J::AbstractSD,
+    noise::Noise;
+    distro=Normal(0., 1/sqrt(Δt)),
+    interpolation=true
+)
     distrosample = rand(distro, N)
     distrosamplefft = rfft(distrosample)
     psdfft = psd(J, noise).(2π*rfftfreq(N, 1/Δt)) # NB: rfftfreq(N, 1/Δt) takes the frequency step in input!

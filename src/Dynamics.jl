@@ -28,7 +28,24 @@ Note: Additional keyword arguments will be passed on to the ODE solver (see the 
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=false, alg=Vern6(), atol=1e-6, rtol=1e-6, kwargs...)
+function diffeqsolver(
+    s0,
+    tspan,
+    Jlist::Vector{LorentzianSD},
+    bfield,
+    bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real},
+    matrix::Vector{TT} where {TT<:Coupling};
+    JH=zero(I),
+    S0=1/2,
+    Bext=[0, 0, 1],
+    saveat=[],
+    save_fields=false,
+    projection=false,
+    alg=Vern6(),
+    atol=1e-6,
+    rtol=1e-6,
+    kwargs...
+)
     N = div(length(s0), 3)
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
@@ -123,7 +140,23 @@ Note: Additional keyword arguments will be passed on to the ODE solver (see the 
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(s0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), S0=1/2, Bext=[0, 0, 1], saveat=[], save_fields=false, projection=false, alg=Tsit5(), atol=1e-3, rtol=1e-3, kwargs...)
+function diffeqsolver(
+    s0,
+    tspan,
+    J::LorentzianSD,
+    bfield,
+    matrix::Coupling;
+    JH=zero(I),
+    S0=1/2,
+    Bext=[0, 0, 1],
+    saveat=[],
+    save_fields=false,
+    projection=false,
+    alg=Tsit5(),
+    atol=1e-3,
+    rtol=1e-3,
+    kwargs...
+)
     N = div(length(s0), 3)
     if length(bfield) == N && length(bfield[1]) == 3 # only local baths
         Jlist = repeat([J], N)
@@ -166,7 +199,24 @@ Note: Additional keyword arguments will be passed on to the ODE solver (see the 
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
 
-function diffeqsolver(x0, p0, tspan, Jlist::Vector{LorentzianSD}, bfield, bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real}, matrix::Vector{TT} where {TT<:Coupling}; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3, kwargs...)
+function diffeqsolver(
+    x0,
+    p0,
+    tspan,
+    Jlist::Vector{LorentzianSD},
+    bfield,
+    bcoupling::Vector{<:AbstractArray{T,1}} where {T<:Real},
+    matrix::Vector{TT} where {TT<:Coupling};
+    JH=zero(I),
+    Ω=1.0,
+    counter_term=true,
+    saveat=[],
+    save_fields=false,
+    alg=Tsit5(),
+    atol=1e-3,
+    rtol=1e-3,
+    kwargs...
+)
     N = div(length(x0), 3)
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
@@ -256,7 +306,23 @@ Note: Additional keyword arguments will be passed on to the ODE solver (see the 
 # Returns
 An [`ODESolution`](https://docs.sciml.ai/DiffEqDocs/stable/basics/solution/) struct from `DifferentialEquations.jl` containing the solution of the equations of motion.
 """
-function diffeqsolver(x0, p0, tspan, J::LorentzianSD, bfield, matrix::Coupling; JH=zero(I), Ω=1.0, counter_term=true, saveat=[], save_fields=false, alg=Tsit5(), atol=1e-3, rtol=1e-3, kwargs...)
+function diffeqsolver(
+    x0,
+    p0,
+    tspan,
+    J::LorentzianSD,
+    bfield,
+    matrix::Coupling;
+    JH=zero(I),
+    Ω=1.0,
+    counter_term=true,
+    saveat=[],
+    save_fields=false,
+    alg=Tsit5(),
+    atol=1e-3,
+    rtol=1e-3,
+    kwargs...
+)
     N = div(length(x0), 3)
     if length(bfield) == N && length(bfield[1]) == 3 # only local baths
         Jlist = repeat([J], N)
