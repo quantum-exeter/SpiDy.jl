@@ -53,10 +53,11 @@ function diffeqsolver(
     M = length(Jlist)
     u0 = [s0; zeros(6*M)]
     invsqrtS0 = 1/sqrt(S0)
+    Cω = [matrix[i].C for i in 1:M]
     Cω2 = [matrix[i].C*transpose(matrix[i].C) for i in 1:M]
-    b = [t -> invsqrtS0*matrix[i].C*[bfield[i][1](t), bfield[i][2](t), bfield[i][3](t)] for i in 1:M]
  
-    params = (N, M, Bext, JH, Jlist, Cω2, b, bcoupling, dualcache(zeros(3)), dualcache(zeros(N,3)))
+    b, Cb, Cω2v, Beff = dualcache(zeros(3)), dualcache(zeros(3)), dualcache(zeros(3)), dualcache(zeros(N, 3))
+    params = (N, M, invsqrtS0, Bext, JH, Jlist, Cω, Cω2, bfield, bcoupling, b, Cb, Cω2v, Beff)
     prob = ODEProblem(_spin_time_step!, u0, tspan, params)
     condition(u, t, integrator) = true
     function affect!(integrator) # projection
@@ -79,9 +80,11 @@ end
 function _spin_time_step!(
     du,
     u,
-    (N, M, Bext, JH, Jlist, Cω2, b, bcoupling, Cω2v, Beff),
+    (N, M, invsqrtS0, Bext, JH, Jlist, Cω, Cω2, bfields, bcoupling, b, Cb, Cω2v, Beff),
     t
 )
+    b = get_tmp(b, u)
+    Cb = get_tmp(Cb, u)
     Cω2v = get_tmp(Cω2v, u)
     Beff = get_tmp(Beff, u)
 
@@ -98,9 +101,20 @@ function _spin_time_step!(
 
     for j in 1:M
         vj = @view v[1+(j-1)*3:3+(j-1)*3]
+ 
+        for k in 1:3
+            b[k] = bfields[j][k](t)
+        end
+
+        mul!(Cb, Cω[j], b)
+        lmul!(invsqrtS0, Cb)
+        mul!(Cω2v, Cω2[j], vj)
+        Cb .+= Cω2v
 
         for i in 1:N
-            Beff[i, :] .+= bcoupling[j][i]*(b[j](t) + mul!(Cω2v, Cω2[j], vj))
+            for k in 1:3
+                Beff[i, k] += bcoupling[j][i]*Cb[k]
+            end
         end
     end
 
