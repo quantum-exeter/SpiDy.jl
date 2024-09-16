@@ -154,5 +154,52 @@ using Test
                 end
             end
         end
+
+        @testset "Reproduce ASH paper" begin
+            prm1 = LorentzianSD(10.0, 7.0, 5.0)
+            prm2 = LorentzianSD(0.16, 1.4, 0.5)
+
+            Ta = 0.07433895689641692
+            Tb = 14.8677913792833860
+            noise_a = QuantumNoise(Ta)
+            noise_b = QuantumNoise(Tb)
+
+            S0a = 1/2
+            S0b = 200/2
+        
+            M = IsoCoupling(1)
+            s0 = [1., 0., 0.]
+
+            tmax = 2π*48
+            Δt = 0.15
+            N = floor(Int, tmax/Δt)
+            tspan = (0., tmax)
+            saveat = (0:1:N)*Δt
+            idxavg = 1000
+
+            navg = 256
+            atol = 1e-6
+            rtol = 1e-6
+
+            function ssavg(Jlor, noise, S0)
+                sols = zeros(navg)
+                for i in 1:navg
+                    bfields = [bfield(N+idxavg, Δt, Jlor, noise),
+                               bfield(N+idxavg, Δt, Jlor, noise),
+                               bfield(N+idxavg, Δt, Jlor, noise)]
+                    sol = diffeqsolver(s0, tspan, Jlor, bfields, M;
+                                       S0=S0, saveat=saveat, alg=Vern7(),
+                                       atol=atol, rtol=rtol)
+                    sols[i] = mean(sol[3, end-idxavg:end])
+                end
+                solavg = mean(sols)
+                return solavg
+            end
+
+            @test isapprox(ssavg(prm1, noise_a, S0a), -0.24, atol=2e-2)
+            @test isapprox(ssavg(prm2, noise_a, S0a), -0.28, atol=2e-2)
+            @test isapprox(ssavg(prm1, noise_b, S0b), -0.85, atol=1e-2)
+            @test isapprox(ssavg(prm2, noise_b, S0b), -0.85, atol=1e-2)
+        end
     end
 end
