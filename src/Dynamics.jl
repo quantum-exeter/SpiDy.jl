@@ -50,6 +50,7 @@ function diffeqsolver(
     if length(Jlist) != length(matrix) || length(Jlist) != length(bcoupling)
         throw(DimensionMismatch("The dimension of Jlist, bcoupling, and matrix must match."))
     end
+
     M = length(Jlist)
     u0 = [s0; zeros(6*M)]
     invsqrtS0 = 1/sqrt(S0)
@@ -59,6 +60,7 @@ function diffeqsolver(
     b, Cb, Cω2v, Beff = dualcache(zeros(3)), dualcache(zeros(3)), dualcache(zeros(3)), dualcache(zeros(N, 3))
     params = (N, M, invsqrtS0, Bext, JH, Jlist, Cω, Cω2, bfield, bcoupling, b, Cb, Cω2v, Beff)
     prob = ODEProblem(_spin_time_step!, u0, tspan, params)
+
     condition(u, t, integrator) = true
     function affect!(integrator) # projection
         for n in 1:N
@@ -68,12 +70,15 @@ function diffeqsolver(
     end
     cb = DiscreteCallback(condition, affect!, save_positions=(false,false))
     skwargs = projection ? (callback=cb,) : NamedTuple()
+
     if save_fields
         save_idxs = 1:(3*N+6*M)
     else
         save_idxs = 1:3*N
     end
+
     sol = solve(prob, alg; abstol=atol, reltol=rtol, maxiters=Int(1e9), save_idxs=save_idxs, saveat=saveat, kwargs..., skwargs...)
+
     return sol
 end
 
