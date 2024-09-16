@@ -53,12 +53,8 @@ function diffeqsolver(
     M = length(Jlist)
     u0 = [s0; zeros(6*M)]
     invsqrtS0 = 1/sqrt(S0)
-    Cω2 = []
-    b = []
-    for i in 1:M
-        push!(Cω2, matrix[i].C*transpose(matrix[i].C))
-        push!(b, t -> invsqrtS0*matrix[i].C*[bfield[i][1](t), bfield[i][2](t), bfield[i][3](t)]);
-    end
+    Cω2 = [matrix[i].C*transpose(matrix[i].C) for i in 1:M]
+    b = [t -> invsqrtS0*matrix[i].C*[bfield[i][1](t), bfield[i][2](t), bfield[i][3](t)] for i in 1:M]
  
     params = (N, M, Bext, JH, Jlist, Cω2, b, bcoupling, dualcache(zeros(3)), dualcache(zeros(N,3)))
     prob = ODEProblem(_spin_time_step!, u0, tspan, params)
