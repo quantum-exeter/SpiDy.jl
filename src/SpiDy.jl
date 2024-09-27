@@ -9,7 +9,6 @@ using Interpolations
 using LinearAlgebra
 using Random
 using Statistics
-using QuadGK
 
 include("Noise.jl");
 include("StochasticField.jl");
@@ -22,7 +21,7 @@ export Noise, SpectralDensity, StochasticField, CouplingTensor, CouplingFunction
 # export structures to build documentation
 export ClassicalNoise, QuantumNoise, NoZeroQuantumNoise, Coupling, AnisoCoupling, IsoCoupling
 # export modules and functions to build documentation
-export spectrum, psd, bfield, estimate_bfield_parameters, Nchain, NNlattice, diffeqsolver
+export spectrum, psd, bfield, Nchain, NNlattice, diffeqsolver
 # export useful SpectralDensities.jl types and functions
 export SpectralDensities, AbstractSD, LorentzianSD
 
