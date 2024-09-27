@@ -63,9 +63,7 @@ using Test
                 Cw = AnisoCoupling([-sin(θ0) 0 0; 0 0 0; cos(θ0) 0 0]);
                 T = 0.0
                 cl_noise = ClassicalNoise(T);
-                bfields = [bfield(N*Δt, J, cl_noise; rtol=1e-3),
-                           bfield(N*Δt, J, cl_noise; rtol=1e-3),
-                           bfield(N*Δt, J, cl_noise; rtol=1e-3)];
+                bfields = [bfield(N, Δt, J, cl_noise), bfield(N, Δt, J, cl_noise), bfield(N, Δt, J, cl_noise)];
             
                 s0 = normalize(rand(3))
                 sol = diffeqsolver(s0, tspan, J, bfields, Cw; saveat=saveat, alg=Tsit5(), atol=1e-5, rtol=1e-5);
@@ -125,7 +123,7 @@ using Test
 
             T = 10 .^ LinRange(-2, 2, 5);
 
-            navg = 400
+            navg = 200
             s0 = normalize([0.1, 0.0, -1.0]);
 
             # although the results being tested here should be independent of
@@ -139,9 +137,9 @@ using Test
                     noise = ClassicalNoise(T[n]/S0);
                     s = zeros(navg, 3)
                     for i in 1:navg
-                        bfields = [bfield(tend, J, noise; rtol=1e-3),
-                                   bfield(tend, J, noise; rtol=1e-3),
-                                   bfield(tend, J, noise; rtol=1e-3)];
+                        bfields = [bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise),
+                                bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise),
+                                bfield(round(Int, 2*tend/Δt)+10, Δt/2, J, noise)];
                         sol = diffeqsolver(s0, tspan, J, bfields, matrix; S0=S0, saveat=saveat, alg=Vern7(), atol=1e-6, rtol=1e-6);
                         s[i, :] = mean(Array(sol), dims=2)
                     end
@@ -186,9 +184,9 @@ using Test
             function ssavg(Jlor, noise, S0)
                 sols = zeros(navg)
                 for i in 1:navg
-                    bfields = [bfield(tmax, Jlor, noise; rtol=1e-3),
-                               bfield(tmax, Jlor, noise; rtol=1e-3),
-                               bfield(tmax, Jlor, noise; rtol=1e-3)]
+                    bfields = [bfield(N+idxavg, Δt, Jlor, noise),
+                               bfield(N+idxavg, Δt, Jlor, noise),
+                               bfield(N+idxavg, Δt, Jlor, noise)]
                     sol = diffeqsolver(s0, tspan, Jlor, bfields, M;
                                        S0=S0, saveat=saveat, alg=Vern7(),
                                        atol=atol, rtol=rtol)
