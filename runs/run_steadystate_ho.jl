@@ -40,12 +40,12 @@ for n in eachindex(T)
     x = zeros(navg, 3*nosc)
     p = zeros(navg, 3*nosc)
     Threads.@threads for i in 1:navg
-        x0 = [1., 0., 0.]
-        p0 = [0., 0., 0.]
-        bfields = [bfield(N, Δt, J, noise),
-                   bfield(N, Δt, J, noise),
-                   bfield(N, Δt, J, noise)];
-        sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
+        local x0 = [1., 0., 0.]
+        local p0 = [0., 0., 0.]
+        local bfields = [bfield(N, Δt, J, noise),
+                         bfield(N, Δt, J, noise),
+                         bfield(N, Δt, J, noise)];
+        local sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
         x[i, :] = mean(sol[1:3*nosc, :].^2, dims=2)
         p[i, :] = mean(sol[1+3*nosc:6*nosc, :].^2, dims=2)
     end

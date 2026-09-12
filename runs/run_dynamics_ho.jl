@@ -39,10 +39,10 @@ solx = zeros(navg, 3*nosc, length(saveat))
 solp = zeros(navg, 3*nosc, length(saveat))
 
 Threads.@threads for i in 1:navg
-    bfields = [bfield(N, Δt, J, noise),
-               bfield(N, Δt, J, noise),
-               bfield(N, Δt, J, noise)];
-    sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
+    local bfields = [bfield(N, Δt, J, noise),
+                     bfield(N, Δt, J, noise),
+                     bfield(N, Δt, J, noise)];
+    local sol = diffeqsolver(x0, p0, tspan, J, bfields, matrix; saveat=saveat);
     solx[i, :, :] = sol[1:3*nosc, :]
     solp[i, :, :] = sol[1+3*nosc:6*nosc, :]
     next!(progress)

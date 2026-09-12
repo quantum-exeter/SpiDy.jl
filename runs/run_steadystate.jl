@@ -45,10 +45,10 @@ for n in eachindex(T)
     noise = QuantumNoise(T[n]);
     s = zeros(navg, 3*nspin)
     Threads.@threads for i in 1:navg
-        bfields = [bfield(N, Δt, J, noise),
-                   bfield(N, Δt, J, noise),
-                   bfield(N, Δt, J, noise)];
-        sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat);
+        local bfields = [bfield(N, Δt, J, noise),
+                         bfield(N, Δt, J, noise),
+                         bfield(N, Δt, J, noise)];
+        local sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat);
         s[i, :] = mean(sol, dims=2)
     end
     Sss[n, :] = mean(s, dims=1)
