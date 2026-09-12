@@ -46,7 +46,7 @@ Threads.@threads for i in 1:navg
                bfield(N, Δt, J, noise),
                bfield(N, Δt, J, noise)];
     sol = diffeqsolver(s0, tspan, J, bfields, matrix; JH=JH, saveat=saveat);
-    sols[i, :, :] = Array(sol)
+    sols[i, :, :] .= sol
     next!(progress)
 end
 solavg = dropdims(mean(sols, dims=1), dims=1);

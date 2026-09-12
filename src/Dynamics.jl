@@ -57,7 +57,7 @@ function diffeqsolver(
     Cω = [matrix[i].C for i in 1:M]
     Cω2 = [matrix[i].C*transpose(matrix[i].C) for i in 1:M]
  
-    b, Cb, Cω2v, Beff = dualcache(zeros(3)), dualcache(zeros(3)), dualcache(zeros(3)), dualcache(zeros(N, 3))
+    b, Cb, Cω2v, Beff = DiffCache(zeros(3)), DiffCache(zeros(3)), DiffCache(zeros(3)), DiffCache(zeros(N, 3))
     params = (N, M, invsqrtS0, Bext, JH, Jlist, Cω, Cω2, bfield, bcoupling, b, Cb, Cω2v, Beff)
     prob = ODEProblem(_spin_time_step!, u0, tspan, params)
 
@@ -318,7 +318,7 @@ function diffeqsolver(
     else
         save_idxs = 1:6*N
     end
-    prob = ODEProblem(f, u0, tspan, (dualcache(zeros(3)), dualcache(zeros(N,3))))
+    prob = ODEProblem(f, u0, tspan, (DiffCache(zeros(3)), DiffCache(zeros(N,3))))
     sol = solve(prob, alg; abstol=atol, reltol=rtol, maxiters=Int(1e9), save_idxs=save_idxs, saveat=saveat, kwargs...)
     return sol
 end

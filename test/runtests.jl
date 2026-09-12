@@ -69,7 +69,7 @@ using Test
             
                 s0 = normalize(rand(3))
                 sol = diffeqsolver(s0, tspan, J, bfields, Cw; saveat=saveat, alg=Tsit5(), atol=1e-5, rtol=1e-5);
-                sdynss = mean(Array(sol), dims=2)
+                sdynss = mean(sol, dims=2)
             
                 # analytic solution of T=0 cl steady-state
                 norm_eq_coeffs(ζ, θ0) = [-1, 4*ζ, 1 - 4*ζ^2, -4*ζ*sin(θ0)^2, 4*ζ^2*sin(θ0)^2]
@@ -106,7 +106,7 @@ using Test
         
             s0 = normalize(rand(3))
             sol = diffeqsolver(s0, tspan, J, bfields, Cw; S0=1, saveat=saveat, alg=Vern7(), atol=1e-8, rtol=1e-8);
-            sdynss = mean(Array(sol), dims=2)
+            sdynss = mean(sol, dims=2)
 
             @test isapprox(sdynss[:,end], [-0.535, -0.135, 0.811], atol=2e-3)
         end
@@ -143,7 +143,7 @@ using Test
                                    bfield(tend, J, noise; rtol=1e-3),
                                    bfield(tend, J, noise; rtol=1e-3)];
                         sol = diffeqsolver(s0, tspan, J, bfields, matrix; S0=S0, saveat=saveat, alg=Vern7(), atol=1e-6, rtol=1e-6);
-                        s[i, :] = mean(Array(sol), dims=2)
+                        s[i, :] = mean(sol, dims=2)
                     end
                     Sss = mean(s, dims=1)
 
